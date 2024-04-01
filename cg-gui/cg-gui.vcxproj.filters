@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\src\App\App.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_demo.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_draw.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_tables.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_widgets.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>ImGUI\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>ImGUI\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Window\ControlWindow.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\MainScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="GLBaseObject.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadShader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="InputController.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerManager.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="App">
+      <UniqueIdentifier>{14c3de85-933d-4426-88f1-3f11ba6e494c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGUI">
+      <UniqueIdentifier>{38940e0d-a62b-4d27-adc6-30fa85a47742}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGUI\backends">
+      <UniqueIdentifier>{481e81f8-69ee-4b09-a57d-cde1e63407ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{187d3d12-3803-44fb-b99a-fb667b621b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{e341a3e5-cdcc-4216-b5fc-da9c07bd2fab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{71b29479-2a3a-4f3c-96f7-b699188465c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{e1161a24-dae8-4d3b-b20f-5dbba16a75d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{eded8a77-c1a8-4efa-be02-ede608b9919e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{3b7bbb53-67a5-48e1-b275-2e29ce8271ac}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\App\App.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\imconfig.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\imgui.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\imgui_internal.h">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\backends\imgui_impl_glfw.h">
+      <Filter>ImGUI\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>ImGUI\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>ImGUI\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Window\ControlWindow.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\MainScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GLBaseObject.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadShader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="InputController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerManager.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Definition.h" />
+    <ClInclude Include="Shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\shader.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\shader.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\lamp.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\lamp.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\model_loading.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\model_loading.fs">
+      <Filter>Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
