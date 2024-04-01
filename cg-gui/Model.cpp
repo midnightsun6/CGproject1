@@ -30,7 +30,7 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 	}
 
 	// Recursion to process all child nodes.
-	for (GLuint i = 0; i < node->mNumMeshes; i++) {
+	for (GLuint i = 0; i < node->mNumChildren; i++) {
 		this->processNode(node->mChildren[i], scene);
 	}
 }

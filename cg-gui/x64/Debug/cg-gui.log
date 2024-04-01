@@ -1,2 +1,30 @@
-﻿  Model.cpp
-  cg-gui.vcxproj -> D:\C++\基礎電腦圖學\CGProject\build\Debugx64\cg-gui.exe
+﻿  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  App.cpp
+  MainScene.cpp
+D:\C++\基礎電腦圖學\CGproject1\src\Scene\MainScene.cpp(37,18): warning C4244: '+=': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
+  ControlWindow.cpp
+  Camera.cpp
+  ControllerManager.cpp
+  GLBaseObject.cpp
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\GLBaseObject.cpp(83,35): warning C4267: '引數': 將 'size_t' 轉換為 'GLsizei'，資料可能遺失
+  InputController.cpp
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\InputController.cpp(75,17): warning C4244: '=': 將 'double' 轉換為 'float'，由於類型不同，可能導致資料遺失
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\InputController.cpp(85,9): warning C4244: '正在初始化': 將 'float' 轉換為 'int'，由於類型不同，可能導致資料遺失
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\InputController.cpp(87,9): warning C4244: 'return': 將 'int' 轉換為 'float'，由於類型不同，可能導致資料遺失
+  LoadShader.cpp
+  main.cpp
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\main.cpp(5,12): warning C4244: '引數': 將 'time_t' 轉換為 'unsigned int'，由於類型不同，可能導致資料遺失
+  Mesh.cpp
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\Mesh.cpp(56,97): warning C4244: '引數': 將 'int' 轉換為 'GLfloat'，由於類型不同，可能導致資料遺失
+D:\C++\基礎電腦圖學\CGproject1\cg-gui\Mesh.cpp(63,43): warning C4267: '引數': 將 'size_t' 轉換為 'GLsizei'，資料可能遺失
+  Model.cpp
+  Shader.cpp
+  正在產生程式碼...
+LINK : warning LNK4098: 預設的程式庫 'MSVCRT' 與其他使用的程式庫衝突，請使用 /NODEFAULTLIB:library
+  cg-gui.vcxproj -> D:\C++\基礎電腦圖學\CGproject1\build\Debugx64\cg-gui.exe

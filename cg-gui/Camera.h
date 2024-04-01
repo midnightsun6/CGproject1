@@ -13,6 +13,7 @@ private:
 	float cameraSpeed = 0.05f;
 	float cameraSpeedUp = 2.f;
     float cameraVerticalSpeed = 0.0025f;
+	float cameraHorizontalSpeed = 0.0025f;
 	float cameraRotationSpeed = 0.075f;
 
 	// Camera rotation
@@ -36,7 +37,7 @@ private:
 	void UpdateCameraMovement(CameraMovement cameraMovement);
 	void UpdateCameraRatation(glm::vec2 mouseMoveDelta);
 	void UpdateCameraScale(float mouseScrollDelta);
-	void UpdateCameraVerticalMovement(float deltaY);
+	void UpdateCameraScrollMovement(glm::vec2 mouseMoveDelta);
 
 public:
 	/* Constructor and Deconstructor */

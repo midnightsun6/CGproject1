@@ -38,8 +38,9 @@ void Camera::UpdateCameraScale(float mouseScrollDelta) {
     fovy = glm::clamp(fovy, 44.f, 47.f);
 }
 
-void Camera::UpdateCameraVerticalMovement(float deltaY) {
-    cameraPos += cameraSpeed * cameraVerticalSpeed * fovy * deltaY * cameraUp;
+void Camera::UpdateCameraScrollMovement(glm::vec2 mouseMoveDelta) {
+	cameraPos += cameraSpeed * cameraHorizontalSpeed * fovy * -mouseMoveDelta.x * cameraRight;
+    cameraPos += cameraSpeed * cameraVerticalSpeed * fovy * mouseMoveDelta.y * cameraUp;
 }
 
 void Camera::UpdateCameraMovement(CameraMovement cameraMovement) {
@@ -85,7 +86,7 @@ void Camera::Update() {
 
 	// Scroll (vertical)
 	if (input->getCameraMovementInput(CameraMovement::VERTICAL)) {
-		UpdateCameraVerticalMovement(input->getCursorMoveDelta().y);
+		UpdateCameraScrollMovement(input->getCursorMoveDelta());
 	}
 
 	// Rotation

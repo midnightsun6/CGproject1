@@ -53,7 +53,6 @@ void Mesh::draw(Shader& shader) {
 		}
 		number = ss.str();
 
-		std::cout << ("material." + name + number) << '\n';
 		glUniform1f(glGetUniformLocation(shader.getProgram(), ("material." + name + number).c_str()), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
