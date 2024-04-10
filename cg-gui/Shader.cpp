@@ -71,6 +71,33 @@ void Shader::use() {
 	glUseProgram(program);
 }
 
-const GLuint& Shader::getProgram() {
+void Shader::setBool(const std::string& name, bool value) const {
+	glUniform1i(glGetUniformLocation(this->program, name.c_str()), (int)value);
+}
+
+void Shader::setInt(const std::string& name, int value) const {
+	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
+}
+void Shader::setUint(const std::string& name, unsigned int value) const {
+	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
+}
+
+void Shader::setFloat(const std::string& name, float value) const {
+	glUniform1f(glGetUniformLocation(this->program, name.c_str()), value);
+}
+
+void Shader::setMat4(const std::string& name, glm::mat4 value) const {
+	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
+	glUniform3fv(glGetUniformLocation(this->program, name.c_str()), 1, glm::value_ptr(value));
+}
+
+glm::mat4 Shader::getMat4(std::string name) const {
+	return mat4Map.count(name) ? mat4Map.at(name) : glm::mat4(1.0f);
+}
+
+const GLuint& Shader::getProgram() const {
 	return program;
 }

@@ -49,6 +49,7 @@ public:
 	void UpdateWindowSize(int width, int height);
 
 	/* Getter and Setter */
+	glm::vec3 getCameraPos();
 	glm::mat4 getProjectionMatrix();
 	glm::mat4 getViewMatrix();
 };

@@ -102,6 +102,10 @@ void Camera::Update() {
 	projection = glm::perspective(fovy, (float)width / height, 0.1f, 100.f);
 }
 
+glm::vec3 Camera::getCameraPos() {
+	return cameraPos;
+}
+
 glm::mat4 Camera::getProjectionMatrix() {
 	return projection;
 }

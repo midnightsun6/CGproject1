@@ -15,7 +15,7 @@ private:
 	std::vector<GLBaseObject> spheres;
 
 	/* Object */
-	Model model;
+	Model testModel, android;
 	Shader modelShader;
 
 public:

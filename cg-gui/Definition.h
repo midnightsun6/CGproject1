@@ -9,6 +9,7 @@
 #include <memory>
 #include <stack>
 #include <sstream>
+#include <unordered_map>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -23,6 +24,8 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+
+#define MAX_BONE_INFLUENCE 4
 
 enum MouseHeld {
 	LEFT,

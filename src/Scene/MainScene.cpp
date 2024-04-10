@@ -27,7 +27,8 @@ bool MainScene::Initialize() {
 
     // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
 
-    model.setModel("./res/models/nanosuit/nanosuit.obj");
+    //testModel.setModel("./res/models/nanosuit/nanosuit.obj");
+    android.setModel("./res/models/Android Robot/Android Robot.obj");
     modelShader.setShader("./res/shaders/model_loading.vs", "./res/shaders/model_loading.fs");
 
     return true;
@@ -57,10 +58,19 @@ void MainScene::Render() {
     glm::mat4 modelMatrix(1.0f);
     /*modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.75f, 0.0f)) * modelMatrix;
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)) * modelMatrix;*/
+    //glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
     glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
-    glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    model.draw(modelShader);
+    
+    // Light
+    glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
+    glm::vec3 lightColor = glm::vec3(1.0f);
+    modelShader.setVec3("lightPos", lightPos);
+    modelShader.setVec3("lightColor", lightColor);
+    modelShader.setVec3("viewPos", camera.getCameraPos());
+
+    //testModel.draw(modelShader);
+    android.draw(modelShader);
 }
 
 void MainScene::OnResize(int width, int height) {

@@ -23,9 +23,9 @@ void Model::loadModel(std::string path) {
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
 	// Add all node in meshes.
-	std::cout << node->mNumMeshes << ' ';
 	for (GLuint i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		std::cout << mesh->mName.C_Str() << '\n';
 		this->meshes.push_back(this->processMesh(mesh, scene));
 	}
 
@@ -36,9 +36,11 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
+	std::string name = mesh->mName.C_Str();
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
+	Material mtl;
 
 	for (GLuint i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
@@ -48,23 +50,38 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		v.x = mesh->mVertices[i].x;
 		v.y = mesh->mVertices[i].y;
 		v.z = mesh->mVertices[i].z;
-		vertex.Position = v;
+		vertex.position = v;
 
 		// Process mesh normal.
-		v.x = mesh->mNormals[i].x;
-		v.y = mesh->mNormals[i].y;
-		v.z = mesh->mNormals[i].z;
-		vertex.Normal = v;
+		if (mesh->HasNormals()) {
+			v.x = mesh->mNormals[i].x;
+			v.y = mesh->mNormals[i].y;
+			v.z = mesh->mNormals[i].z;
+			vertex.normal = v;
+		}
+		else {
+			vertex.normal = glm::vec3(1.0f);
+		}
 
 		// Process mesh texture.
 		if (mesh->mTextureCoords[0]) {
 			glm::vec2 vec;
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
-			vertex.TexCoords = vec;
+			vertex.texCoords = vec;
+			// tangent
+			v.x = mesh->mTangents[i].x;
+			v.y = mesh->mTangents[i].y;
+			v.z = mesh->mTangents[i].z;
+			vertex.tangent = v;
+			// bitangent
+			v.x = mesh->mBitangents[i].x;
+			v.y = mesh->mBitangents[i].y;
+			v.z = mesh->mBitangents[i].z;
+			vertex.bitangent = v;
 		}
 		else {
-			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+			vertex.texCoords = glm::vec2(0.0f, 0.0f);
 		}
 
 		vertices.push_back(vertex);
@@ -77,15 +94,53 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 
+	
 	if (mesh->mMaterialIndex >= 0) {
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
 		std::vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		if (!diffuseMaps.empty()) {
+			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		}
+
 		std::vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		if (!textures.empty()) {
+			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		}
+
+		std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
+		if (!heightMaps.empty()) {
+			textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+		}
+
+		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_normal");
+		if (!normalMaps.empty()) {
+			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+		}
+
+
+		aiColor3D color(0, 0, 0);
+		float shininess;
+		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+			mtl.diffuse = glm::vec3(color.r, color.g, color.b);
+			//std::cout << "Set diffuse: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
+		}
+
+		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color)) {
+			mtl.specular = glm::vec3(color.r, color.g, color.b);
+			//std::cout << "Set specular: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
+		}
+
+		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color)) {
+			mtl.ambient = glm::vec3(color.r, color.g, color.b);
+			//std::cout << "Set ambient: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
+		}
+		if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininess)) {
+			mtl.shininess = shininess;
+		}
 	}
 	
-	return Mesh(vertices, indices, textures);
+	return Mesh(name, vertices, indices, textures, mtl);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {

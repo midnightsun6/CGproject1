@@ -2,9 +2,13 @@
 #include "Shader.h"
 
 struct Vertex {
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 texCoords;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	std::vector<int> bonesID[MAX_BONE_INFLUENCE];
+	std::vector<float> weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
@@ -32,6 +36,7 @@ private:
 
 	glm::mat4 transform = glm::mat4(1.0f);
 
+	unsigned int getWhiteTexture();
 	void setupMesh();
 
 public:
@@ -39,6 +44,6 @@ public:
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures, Material material);
 	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material);
 
-	void draw(Shader& shader);
+	void draw(const Shader& shader);
 };
 
