@@ -19,7 +19,7 @@ public:
 	void setInt(const std::string& name, int value) const;
 	void setUint(const std::string& name, unsigned int value) const;
 	void setFloat(const std::string& name, float value) const;
-	void setMat4(const std::string& name, glm::mat4 value) const;
+	void setMat4(const std::string& name, glm::mat4 value);
 	void setVec3(const std::string& name, const glm::vec3& value) const;
 
 	glm::mat4 getMat4(std::string name) const;

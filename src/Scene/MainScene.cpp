@@ -42,6 +42,11 @@ void MainScene::Update(double dt) {
     box.setModel(glm::mat4(1.0f));
     box.Rotate(totalTime * angle, 0, 1, 0);
     box.Translate(totalTime * speed, 0, 0);
+
+    glm::mat4 modelMatrix(1.0f);
+    modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(totalTime * 0.0001, 0, 0));
+    modelMatrix = modelShader.getMat4("model") * modelMatrix;
+    modelShader.setMat4("model", modelMatrix);
 }
 
 void MainScene::Render() {
@@ -55,7 +60,6 @@ void MainScene::Render() {
     }
 
     modelShader.use();
-    glm::mat4 modelMatrix(1.0f);
     /*modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.75f, 0.0f)) * modelMatrix;
     modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)) * modelMatrix;*/
     //glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));

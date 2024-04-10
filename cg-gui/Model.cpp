@@ -19,14 +19,18 @@ void Model::loadModel(std::string path) {
 
 	this->directory = path.substr(0, path.find_last_of('/'));
 	this->processNode(scene->mRootNode, scene);
+	this->ResortMesh();
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
 	// Add all node in meshes.
 	for (GLuint i = 0; i < node->mNumMeshes; i++) {
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		std::cout << mesh->mName.C_Str() << '\n';
-		this->meshes.push_back(this->processMesh(mesh, scene));
+		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
+		std::cout << aimesh->mName.C_Str() << '\n';
+		
+		Mesh mesh = this->processMesh(aimesh, scene);
+		meshTable[mesh.getName()] = mesh;
+		this->meshes.push_back(mesh);
 	}
 
 	// Recursion to process all child nodes.
@@ -170,6 +174,28 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
+void Model::ResortMesh() {
+	for (int i = meshes.size() - 1; ~i; i--) {
+		Mesh& mesh = meshes[i];
+		std::string parentName = mesh.getName();
+		int lastSpaceIdx = parentName.find_last_of(' ');
+		if (lastSpaceIdx == std::string::npos) {
+			continue;
+		}
+		parentName = parentName.substr(0, lastSpaceIdx);
+
+		if (meshTable.count(parentName)) {
+			meshTable[parentName].addChild(mesh);
+			meshTable.erase(mesh.getName());
+		}
+	}
+
+	meshes.clear();
+	for (auto& [_, mesh] : meshTable) {
+		meshes.push_back(mesh);
+	}
+}
+
 Model::Model() {}
 
 Model::Model(const char* path) {
@@ -182,7 +208,9 @@ void Model::setModel(const char* path) {
 }
 
 void Model::draw(Shader& shader) {
+	std::cout << meshes.size() << '\n';
 	for (auto& mesh : meshes) {
+		std::cout << mesh.getName() << '\n';
 		mesh.draw(shader);
 	}
 }

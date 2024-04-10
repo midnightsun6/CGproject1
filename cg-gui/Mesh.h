@@ -31,6 +31,7 @@ private:
 	std::vector<Vertex> vertices;
 	std::vector<GLuint> indices;
 	std::vector<Texture> textures;
+	std::vector<Mesh> children;
 
 	GLuint VAO, VBO, EBO;
 
@@ -40,10 +41,14 @@ private:
 	void setupMesh();
 
 public:
+	Mesh();
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures, Material material);
 	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material);
 
-	void draw(const Shader& shader);
+	std::string getName() const;
+
+	void addChild(Mesh mesh);
+	void draw(Shader& shader);
 };
 

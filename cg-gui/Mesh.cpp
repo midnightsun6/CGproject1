@@ -56,6 +56,8 @@ void Mesh::setupMesh() {
 	glBindVertexArray(0);
 }
 
+Mesh::Mesh() {}
+
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures) {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -83,7 +85,15 @@ Mesh::Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned 
 	setupMesh();
 }
 
-void Mesh::draw(const Shader& shader) {
+std::string Mesh::getName() const {
+	return name;
+}
+
+void Mesh::addChild(Mesh mesh) {
+	children.push_back(mesh);
+}
+
+void Mesh::draw(Shader& shader) {
 	glm::mat4 anime = transform;
 	anime = anime * shader.getMat4("model");
 	shader.setMat4("model", anime);
