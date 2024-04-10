@@ -185,7 +185,7 @@ void Model::ResortMesh() {
 		parentName = parentName.substr(0, lastSpaceIdx);
 
 		if (meshTable.count(parentName)) {
-			meshTable[parentName].addChild(mesh);
+			meshTable[parentName].addChild(meshTable[mesh.getName()]);
 			meshTable.erase(mesh.getName());
 		}
 	}
@@ -204,13 +204,10 @@ Model::Model(const char* path) {
 
 void Model::setModel(const char* path) {
 	this->loadModel(path);
-	std::cout << meshes.size() << '\n';
 }
 
 void Model::draw(Shader& shader) {
-	std::cout << meshes.size() << '\n';
 	for (auto& mesh : meshes) {
-		std::cout << mesh.getName() << '\n';
 		mesh.draw(shader);
 	}
 }

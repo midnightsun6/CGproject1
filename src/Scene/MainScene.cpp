@@ -18,12 +18,12 @@ bool MainScene::Initialize() {
 
     // Init objects.
     grid.Init(GL_LINES);
-    grid.setShader("./res/shaders/shader.vs", "./res/shaders/shader.fs");
     setGrid();
 
     box.Init(GL_TRIANGLES);
-    box.setShader("./res/shaders/shader.vs", "./res/shaders/shader.fs");
     setBox(1);
+
+    baseObjShader.setShader("./res/shaders/shader.vs", "./res/shaders/shader.fs");
 
     // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
 
@@ -44,7 +44,7 @@ void MainScene::Update(double dt) {
     box.Translate(totalTime * speed, 0, 0);
 
     glm::mat4 modelMatrix(1.0f);
-    modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(totalTime * 0.0001, 0, 0));
+    //modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(totalTime * 0.0001, 0, 0));
     modelMatrix = modelShader.getMat4("model") * modelMatrix;
     modelShader.setMat4("model", modelMatrix);
 }
@@ -53,10 +53,11 @@ void MainScene::Render() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    box.Render(camera.getProjectionMatrix(), camera.getViewMatrix());
-    grid.Render(camera.getProjectionMatrix(), camera.getViewMatrix());
+    baseObjShader.use();
+    box.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
+    grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     for (auto& obj : spheres) {
-        obj.Render(camera.getProjectionMatrix(), camera.getViewMatrix());
+        obj.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     }
 
     modelShader.use();
@@ -150,7 +151,6 @@ void MainScene::setGrid() {
 void MainScene::addSphere(float radius, int slices, int stacks, glm::vec3 color) {
     GLBaseObject sphere;
     sphere.Init(GL_TRIANGLE_STRIP);
-    sphere.setShader("../../cg-gui/Shaders/shader.vs", "../../cg-gui/Shaders/shader.fs");
 
     for (int i = 0; i <= stacks; i++) {
         float phi = i / (float)stacks * glm::pi<float>();

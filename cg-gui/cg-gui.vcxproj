@@ -154,7 +154,6 @@
     <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="GLBaseObject.cpp" />
     <ClCompile Include="InputController.cpp" />
-    <ClCompile Include="LoadShader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -175,18 +174,17 @@
     <ClInclude Include="Definition.h" />
     <ClInclude Include="GLBaseObject.h" />
     <ClInclude Include="InputController.h" />
-    <ClInclude Include="LoadShader.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\model_loading.fs" />
-    <None Include="Shaders\model_loading.vs" />
-    <None Include="Shaders\shader.fs" />
-    <None Include="Shaders\shader.vs" />
-    <None Include="Shaders\lamp.fs" />
-    <None Include="Shaders\lamp.vs" />
+    <None Include="..\build\Debugx64\res\shaders\lamp.fs" />
+    <None Include="..\build\Debugx64\res\shaders\lamp.vs" />
+    <None Include="..\build\Debugx64\res\shaders\model_loading.fs" />
+    <None Include="..\build\Debugx64\res\shaders\model_loading.vs" />
+    <None Include="..\build\Debugx64\res\shaders\shader.fs" />
+    <None Include="..\build\Debugx64\res\shaders\shader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

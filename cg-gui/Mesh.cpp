@@ -95,13 +95,17 @@ void Mesh::addChild(Mesh mesh) {
 
 void Mesh::draw(Shader& shader) {
 	glm::mat4 anime = transform;
-	anime = anime * shader.getMat4("model");
+	anime = anime * shader.getMat4("model");	// Need to change
+	// Draw the children meshes.
+	for (auto& child : children) {
+		child.draw(shader);
+	}
+
 	shader.setMat4("model", anime);
 	shader.setVec3("material.diffuse", material.diffuse);
 	shader.setVec3("material.specular", material.specular);
 	shader.setVec3("material.ambient", material.ambient);
 	shader.setFloat("material.shininess", material.shininess);
-
 	shader.setInt("hasTexture", textures.empty() ? 0 : 1);
 
 	GLuint diffuseNr = 1;

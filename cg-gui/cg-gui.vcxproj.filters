@@ -38,9 +38,6 @@
     <ClCompile Include="GLBaseObject.cpp">
       <Filter>Object</Filter>
     </ClCompile>
-    <ClCompile Include="LoadShader.cpp">
-      <Filter>Shader</Filter>
-    </ClCompile>
     <ClCompile Include="InputController.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
@@ -120,9 +117,6 @@
     <ClInclude Include="GLBaseObject.h">
       <Filter>Object</Filter>
     </ClInclude>
-    <ClInclude Include="LoadShader.h">
-      <Filter>Shader</Filter>
-    </ClInclude>
     <ClInclude Include="InputController.h">
       <Filter>Controller</Filter>
     </ClInclude>
@@ -141,22 +135,22 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\shader.vs">
+    <None Include="..\build\Debugx64\res\shaders\lamp.fs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\shader.fs">
+    <None Include="..\build\Debugx64\res\shaders\lamp.vs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\lamp.vs">
+    <None Include="..\build\Debugx64\res\shaders\model_loading.fs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\lamp.fs">
+    <None Include="..\build\Debugx64\res\shaders\model_loading.vs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\model_loading.vs">
+    <None Include="..\build\Debugx64\res\shaders\shader.fs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\model_loading.fs">
+    <None Include="..\build\Debugx64\res\shaders\shader.vs">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

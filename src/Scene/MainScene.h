@@ -16,7 +16,7 @@ private:
 
 	/* Object */
 	Model testModel, android;
-	Shader modelShader;
+	Shader modelShader, baseObjShader;
 
 public:
 	MainScene();

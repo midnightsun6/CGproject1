@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LoadShader.h"
+#include "Shader.h"
 
 class GLBaseObject {
 protected:
@@ -22,7 +22,6 @@ public:
 
 	virtual void Init(GLenum type);
 
-	void setShader(const char* vert, const char* frag);
 	void addPoint(glm::vec3 point);
 	void addColor(glm::vec3 color);
 	void addIndex(unsigned int index);
@@ -32,6 +31,6 @@ public:
 	void Rotate(float angle, float x, float y, float z);
 	void Scale(float x, float y, float z);
 
-	virtual void Render(glm::mat4 projection, glm::mat4 view);
+	virtual void Draw(glm::mat4 projection, glm::mat4 view, Shader& shader);
 };
 

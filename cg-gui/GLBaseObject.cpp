@@ -22,15 +22,6 @@ void GLBaseObject::Init(GLenum type) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 }
 
-void GLBaseObject::setShader(const char* vert, const char* frag) {
-	ShaderInfo shaders[] = {
-		{ GL_VERTEX_SHADER, vert },
-		{ GL_FRAGMENT_SHADER, frag },
-		{ GL_NONE, NULL }
-	};
-	shaderProgram = LoadShaders(shaders);
-}
-
 void GLBaseObject::addPoint(glm::vec3 point) {
 	points.push_back(point);
 }
@@ -59,13 +50,12 @@ void GLBaseObject::Scale(float x, float y, float z) {
 	model = glm::scale(glm::mat4(1.f), glm::vec3(x, y, z)) * model;
 }
 
-void GLBaseObject::Render(glm::mat4 projection, glm::mat4 view) {
-	glUseProgram(shaderProgram);
+void GLBaseObject::Draw(glm::mat4 projection, glm::mat4 view, Shader& shader) {
 	glBindVertexArray(VAO);
 
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projectionMatrix"), 1, GL_FALSE, &projection[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "viewMatrix"), 1, GL_FALSE, &view[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "modelMatrix"), 1, GL_FALSE, &model[0][0]);
+	shader.setMat4("projectionMatrix", projection);
+	shader.setMat4("viewMatrix", view);
+	shader.setMat4("modelMatrix", model);
 
 	glBindBuffer(GL_ARRAY_BUFFER, pVBOs);
 	glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), &points[0], GL_DYNAMIC_DRAW);
