@@ -10,6 +10,7 @@
 #include <stack>
 #include <sstream>
 #include <unordered_map>
+#include <set>
 
 #include <imgui.h>
 #include <imgui_internal.h>

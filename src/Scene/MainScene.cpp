@@ -29,6 +29,7 @@ bool MainScene::Initialize() {
 
     //testModel.setModel("./res/models/nanosuit/nanosuit.obj");
     android.setModel("./res/models/Android Robot/Android Robot.obj");
+    android.addAnimation();
     modelShader.setShader("./res/shaders/model_loading.vs", "./res/shaders/model_loading.fs");
 
     return true;
@@ -37,6 +38,7 @@ bool MainScene::Initialize() {
 void MainScene::Update(double dt) {
     totalTime += dt;
     camera.Update();
+    android.update(dt);
 
     float angle = 90, speed = 5;
     box.setModel(glm::mat4(1.0f));
@@ -45,7 +47,6 @@ void MainScene::Update(double dt) {
 
     glm::mat4 modelMatrix(1.0f);
     //modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(totalTime * 0.0001, 0, 0));
-    modelMatrix = modelShader.getMat4("model") * modelMatrix;
     modelShader.setMat4("model", modelMatrix);
 }
 
@@ -70,7 +71,7 @@ void MainScene::Render() {
     // Light
     glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
     glm::vec3 lightColor = glm::vec3(1.0f);
-    modelShader.setVec3("lightPos", lightPos);
+    modelShader.setVec3("lightPos", camera.getCameraPos());
     modelShader.setVec3("lightColor", lightColor);
     modelShader.setVec3("viewPos", camera.getCameraPos());
 

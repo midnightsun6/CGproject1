@@ -53,6 +53,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -81,6 +84,9 @@
     </Filter>
     <Filter Include="Controller">
       <UniqueIdentifier>{3b7bbb53-67a5-48e1-b275-2e29ce8271ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{77e9bbde-0c2a-4a65-abc6-33326a3dff92}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

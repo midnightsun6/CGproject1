@@ -19,7 +19,7 @@ void Model::loadModel(std::string path) {
 
 	this->directory = path.substr(0, path.find_last_of('/'));
 	this->processNode(scene->mRootNode, scene);
-	this->ResortMesh();
+	this->resortMesh();
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
@@ -28,8 +28,10 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
 		std::cout << aimesh->mName.C_Str() << '\n';
 		
+		// Get mesh
 		Mesh mesh = this->processMesh(aimesh, scene);
 		meshTable[mesh.getName()] = mesh;
+
 		this->meshes.push_back(mesh);
 	}
 
@@ -127,24 +129,29 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		float shininess;
 		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
 			mtl.diffuse = glm::vec3(color.r, color.g, color.b);
-			//std::cout << "Set diffuse: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
 		}
 
 		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, color)) {
 			mtl.specular = glm::vec3(color.r, color.g, color.b);
-			//std::cout << "Set specular: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
 		}
 
 		if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_AMBIENT, color)) {
 			mtl.ambient = glm::vec3(color.r, color.g, color.b);
-			//std::cout << "Set ambient: " << color.r << ' ' << color.g << ' ' << color.b << '\n';
 		}
 		if (AI_SUCCESS == material->Get(AI_MATKEY_SHININESS, shininess)) {
 			mtl.shininess = shininess;
 		}
 	}
+
+	// Compute the offset between origin and itself center.
+	glm::vec3 sum(0.f, 0.f, 0.f);
+	for (GLuint j = 0; j < mesh->mNumVertices; j++) {
+		aiVector3D pos = mesh->mVertices[j];
+		sum += glm::vec3(pos.x, pos.y, pos.z);
+	}
+	glm::vec3 center = sum / (float)mesh->mNumVertices;
 	
-	return Mesh(name, vertices, indices, textures, mtl);
+	return Mesh(name, vertices, indices, textures, mtl, center);
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
@@ -174,7 +181,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
-void Model::ResortMesh() {
+void Model::resortMesh() {
 	for (int i = meshes.size() - 1; ~i; i--) {
 		Mesh& mesh = meshes[i];
 		std::string parentName = mesh.getName();
@@ -196,6 +203,35 @@ void Model::ResortMesh() {
 	}
 }
 
+void Model::addAnimation() {
+	std::vector<KeyFrame> keyFrames = {
+		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
+		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
+		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+		//KeyFrame(10.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, -180), glm::vec3(1, 1, 1)),
+		//KeyFrame(15.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
+		//KeyFrame(20.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, -90), glm::vec3(1, 1, 1)),
+	};
+
+	Track track;
+	track.keyFrames = keyFrames;
+
+	AnimationClip clip;
+	clip.name = "test";
+	// LeftLowerHand
+	clip.tracks["Body LeftUpperHand LeftElbow"] = track;
+	//clip.tracks["Body"] = track;
+	clip.duration = keyFrames.back().time;
+
+	animator.addAnimation(clip);
+	animator.transitionTo("test");
+}
+
+void Model::update(float dt) {
+	animator.update(dt);
+}
+
 Model::Model() {}
 
 Model::Model(const char* path) {
@@ -208,7 +244,7 @@ void Model::setModel(const char* path) {
 
 void Model::draw(Shader& shader) {
 	for (auto& mesh : meshes) {
-		mesh.draw(shader);
+		mesh.draw(shader, animator, glm::mat4(1.f));
 	}
 }
 

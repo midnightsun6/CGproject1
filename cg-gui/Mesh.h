@@ -1,5 +1,6 @@
 #pragma once
 #include "Shader.h"
+#include "Animator.h"
 
 struct Vertex {
 	glm::vec3 position;
@@ -34,8 +35,7 @@ private:
 	std::vector<Mesh> children;
 
 	GLuint VAO, VBO, EBO;
-
-	glm::mat4 transform = glm::mat4(1.0f);
+	glm::mat4 transform, invTransform;
 
 	unsigned int getWhiteTexture();
 	void setupMesh();
@@ -44,11 +44,12 @@ public:
 	Mesh();
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures, Material material);
-	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material);
+	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material, glm::vec3 center);
 
 	std::string getName() const;
 
+	void setCenter(glm::vec3 center);
 	void addChild(Mesh mesh);
-	void draw(Shader& shader);
+	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel);
 };
 

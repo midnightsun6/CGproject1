@@ -75,33 +75,44 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vecto
 	setupMesh();
 }
 
-Mesh::Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material) {
+Mesh::Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material, glm::vec3 center) {
 	this->name = name;
 	this->vertices = vertices;
 	this->indices = indices;
 	this->textures = textures;
 	this->material = material;
+	this->transform = glm::translate(glm::mat4(1.f), center);
+	this->invTransform = glm::translate(glm::mat4(1.f), -center);
 
 	setupMesh();
 }
 
 std::string Mesh::getName() const {
-	return name;
+	return this->name;
+}
+
+void Mesh::setCenter(glm::vec3 center) {
+	this->transform = glm::translate(glm::mat4(1.f), center);
+	this->invTransform = glm::translate(glm::mat4(1.f), -center);
 }
 
 void Mesh::addChild(Mesh mesh) {
 	children.push_back(mesh);
 }
 
-void Mesh::draw(Shader& shader) {
-	glm::mat4 anime = transform;
-	anime = anime * shader.getMat4("model");	// Need to change
+void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel) {
+	glm::mat4 animation = animator.getAnimationMatrix(this->name);
+	glm::mat4 model = parentModel * transform * animation * invTransform;
+	/*glm::mat4 model(1.f);
+	if (name == "Body LeftUpperHand LeftElbow LeftLowerHand")
+		model = glm::rotate(glm::mat4(1.f), glm::radians(30.f), glm::vec3(0, 0, 1));*/
+	//transform = anime;
 	// Draw the children meshes.
 	for (auto& child : children) {
-		child.draw(shader);
+		child.draw(shader, animator, model);
 	}
 
-	shader.setMat4("model", anime);
+	shader.setMat4("model", model);
 	shader.setVec3("material.diffuse", material.diffuse);
 	shader.setVec3("material.specular", material.specular);
 	shader.setVec3("material.ambient", material.ambient);
