@@ -9,6 +9,7 @@ private:
 	float scrollDeltaY;
 	std::vector<bool> isMouseHeld;
 	std::vector<bool> isCameraMoveHeld;
+	std::vector<bool> isKeyPress;
 
 	InputController();
 
@@ -24,4 +25,5 @@ public:
 	float getScrollDeltaY();
 	bool getCameraMovementInput(CameraMovement cm);
 	bool getMouseHeld(MouseHeld mh);
+	bool getKeyPress(char key);
 };

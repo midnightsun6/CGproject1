@@ -204,27 +204,54 @@ void Model::resortMesh() {
 }
 
 void Model::addAnimation() {
-	std::vector<KeyFrame> keyFrames = {
-		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
-		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
-		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-		//KeyFrame(10.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, -180), glm::vec3(1, 1, 1)),
-		//KeyFrame(15.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 90), glm::vec3(1, 1, 1)),
-		//KeyFrame(20.f, glm::vec3(0, 0, 0), glm::vec3(0, 0, -90), glm::vec3(1, 1, 1)),
-	};
-
-	Track track;
-	track.keyFrames = keyFrames;
-
 	AnimationClip clip;
 	clip.name = "test";
-	// LeftLowerHand
+	clip.isLoop = true;
+
+	Track track;
+	track.keyFrames = {
+		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
+		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 75), glm::vec3(1, 1, 1)),
+		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
+		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 75), glm::vec3(1, 1, 1)),
+		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
+	};
+	clip.tracks["Body LeftUpperHand"] = track;
+
+	track.keyFrames = {
+		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 20), glm::vec3(1, 1, 1)),
+		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 20), glm::vec3(1, 1, 1)),
+		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+	};
 	clip.tracks["Body LeftUpperHand LeftElbow"] = track;
-	//clip.tracks["Body"] = track;
-	clip.duration = keyFrames.back().time;
+
+	track.keyFrames = {
+		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 45, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, -45, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 45, 0), glm::vec3(1, 1, 1)),
+		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+	};
+	clip.tracks["Body"] = track;
+
+	//track.keyFrames = {
+	//	KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
+	//	KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 90, 0), glm::vec3(1, 1, 1)),
+	//	KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 180, 0), glm::vec3(1, 1, 1)),
+	//	KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 270, 0), glm::vec3(1, 1, 1)),
+	//	KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 360, 0), glm::vec3(1, 1, 1)),
+	//};
+	//clip.tracks["Body Head"] = track;
+
+	clip.duration = 2.0f;
 
 	animator.addAnimation(clip);
+	animator.transitionTo("test");
+}
+
+void Model::playAnimation() {
 	animator.transitionTo("test");
 }
 

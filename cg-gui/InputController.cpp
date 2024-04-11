@@ -5,6 +5,7 @@ InputController InputController::input;
 InputController::InputController() {
 	isMouseHeld.resize(MouseHeld::NO_HELD);
 	isCameraMoveHeld.resize(CameraMovement::NO_MOVE);
+	isKeyPress = std::vector<bool>(26, false);
 }
 
 InputController* InputController::getInstance() {
@@ -34,6 +35,9 @@ void InputController::OnKeyboard(int key, int action) {
 			break;
 		case GLFW_KEY_D:
 			isCameraMoveHeld[CameraMovement::RIGHTSIDE] = isHeld;
+			break;
+		case GLFW_KEY_Z:
+			isKeyPress['z' - 'a'] = isHeld;
 			break;
 		case GLFW_KEY_LEFT_SHIFT:
 			isCameraMoveHeld[CameraMovement::SPEED_UP] = isHeld;
@@ -93,4 +97,8 @@ bool InputController::getCameraMovementInput(CameraMovement cm) {
 
 bool InputController::getMouseHeld(MouseHeld mh) {
 	return isMouseHeld[mh];
+}
+
+bool InputController::getKeyPress(char key) {
+	return isKeyPress[key - 'a'];
 }

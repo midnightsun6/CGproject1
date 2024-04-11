@@ -30,38 +30,31 @@ struct KeyFrame {
 // For each mesh how to move.
 struct Track {
 	std::vector<KeyFrame> keyFrames;
-	//std::unordered_map<float, glm::mat4> interpolation;
 
 	glm::mat4 interpolate(float currentTime) {
+		// If no animation, skip it.
 		if (keyFrames.empty()) {
 			return glm::mat4(1.0f);
 		}
 
-		// 计算循环内的当前时间
-		float duration = keyFrames.back().time;
-		float loopedTime = std::fmod(currentTime, duration);
+		// If current time is greater than last frame of animation, keep it.
+		if (currentTime >= keyFrames.back().time) {
+			KeyFrame& lastFrame = keyFrames.back();
+			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), lastFrame.position);
+			glm::mat4 rotationMatrix = glm::mat4_cast(lastFrame.rotation);
+			glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), lastFrame.scale);
+			return translationMatrix * rotationMatrix * scaleMatrix;
+		}
 
-		// 找到适当的关键帧进行插值
+		// Find a exact key frame to play the animation.
 		for (int i = 0; i < keyFrames.size() - 1; ++i) {
-			KeyFrame startFrame = keyFrames[i];
-			KeyFrame endFrame = (i + 1 < keyFrames.size()) ? keyFrames[i + 1] : keyFrames.front();
+			KeyFrame& startFrame = keyFrames[i], &endFrame = keyFrames[i + 1];
 
-			// 如果当前时间小于下一个关键帧的时间或者已经是最后一个关键帧，则进行插值
-			if (loopedTime <= endFrame.time || i == keyFrames.size() - 1) {
-				float progression;
-				// 如果是最后一个关键帧，则需要特殊处理，因为下一个关键帧是第一个关键帧，时间被重置
-				if (i == keyFrames.size() - 1) {
-					float endTime = duration + keyFrames.front().time; // 假设循环结束时的虚拟时间点
-					progression = (loopedTime + (duration - startFrame.time)) / (endTime - startFrame.time);
-				}
-				else {
-					progression = (loopedTime - startFrame.time) / (endFrame.time - startFrame.time);
-				}
-				progression = std::abs(progression);
+			if (startFrame.time <= currentTime && currentTime <= endFrame.time) {
+				float progression = (currentTime - startFrame.time) / (endFrame.time - startFrame.time);
 
 				glm::vec3 position = glm::mix(startFrame.position, endFrame.position, progression);
 				glm::quat rotation = glm::slerp(startFrame.rotation, endFrame.rotation, progression);
-				std::cout << "time: " << progression << ' ' << "Rotation: " << startFrame.rotation.z << ' ' << endFrame.rotation.z << '\n';
 				glm::vec3 scale = glm::mix(startFrame.scale, endFrame.scale, progression);
 
 				glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), position);
@@ -70,7 +63,6 @@ struct Track {
 				return translationMatrix * rotationMatrix * scaleMatrix;
 			}
 		}
-		// 作为后备，返回单位矩阵
 		return glm::mat4(1.0f);
 	}
 };
@@ -79,11 +71,13 @@ struct AnimationClip {
 	std::string name;
 	std::unordered_map<std::string, Track> tracks;
 	float duration;
+	bool isLoop = false;
 };
 
 class Animator {
 private:
 	float currTime;
+	bool isPlaying;
 
 	std::string currAnimation;
 	std::unordered_map<std::string, AnimationClip> animations;

@@ -24,6 +24,7 @@ public:
 
 	void setModel(const char* path);
 	void addAnimation();
+	void playAnimation();
 	void update(float dt);
 	void draw(Shader& shader);
 };

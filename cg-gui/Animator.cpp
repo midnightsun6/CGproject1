@@ -2,16 +2,20 @@
 
 Animator::Animator() {
 	currTime = 0;
+	isPlaying = false;
 }
 
 Animator::~Animator() {}
 
 void Animator::update(float dt) {
+	if (!isPlaying) return;
+
 	if (animations.count(currAnimation)) {
 		AnimationClip& clip = animations[currAnimation];
 
 		currTime += dt;
 		if (currTime > clip.duration) {
+			isPlaying = clip.isLoop;
 			currTime = fmod(currTime, clip.duration);
 		}
 	}
@@ -22,9 +26,18 @@ void Animator::addAnimation(AnimationClip animation) {
 }
 
 void Animator::transitionTo(std::string animationName) {
-	this->currAnimation = animationName;
+	if (animations.count(animationName)) {
+		currAnimation = animationName;
+		currTime = 0;
+		isPlaying = true;
+	}
 }
 
 const glm::mat4& Animator::getAnimationMatrix(std::string part) {
-	return animations[currAnimation].tracks[part].interpolate(currTime);
+	AnimationClip& clip = animations[currAnimation];
+	Track& track = clip.tracks[part];
+	if (isPlaying) {
+		return track.interpolate(currTime);
+	}
+	return track.interpolate(clip.duration);
 }

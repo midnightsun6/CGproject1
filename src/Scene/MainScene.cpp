@@ -40,6 +40,10 @@ void MainScene::Update(double dt) {
     camera.Update();
     android.update(dt);
 
+    if (input->getKeyPress('z')) {
+        android.playAnimation();
+    }
+
     float angle = 90, speed = 5;
     box.setModel(glm::mat4(1.0f));
     box.Rotate(totalTime * angle, 0, 1, 0);
