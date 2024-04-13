@@ -20,6 +20,10 @@ namespace CG
 
 	void ControlWindow::Display()
 	{
+		ImVec2 center;
+		center.x = 50;
+		center.y = 50;
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing);
 		ImGui::Begin("Control");
 		{
 			ImGui::Checkbox("Demo Window", &showDemoWindow);
@@ -58,6 +62,43 @@ namespace CG
 				ImGui::EndCombo();
 			}
 
+		}
+		ImGui::End();
+
+		/* Load Object and Animation Window */
+		center.x = 300;
+		center.y = 50;
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing);
+		ImGui::Begin("Load Object and Animation");
+		{
+			static char path[1024], newName[1024], objname[1024], animation[1024];
+			ImGui::InputText("Object Path", path, sizeof(path));
+			ImGui::InputText("Name for Object", newName, sizeof(newName));
+			if (ImGui::Button("Load Object")) {
+				targetScene->loadModel(path, newName);
+			}
+			ImGui::NewLine();
+
+			ImGui::InputText("Object Name", objname, sizeof(objname));
+			ImGui::InputText("Animation Path", animation, sizeof(animation));
+			if (ImGui::Button("Load Animation into Object")) {
+				targetScene->loadAnimation(objname, animation);
+			}
+		}
+		ImGui::End();
+
+		/* Animation Window */
+		center.x = 700;
+		center.y = 50;
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing);
+		ImGui::Begin("Animation");
+		{
+			static char objname[1024], animation[1024];
+			ImGui::InputText("Object Name", objname, sizeof(objname));
+			ImGui::InputText("Animation Name", animation, sizeof(animation));
+			if (ImGui::Button("Play Animation")) {
+				targetScene->playAnimation(objname, animation);
+			}
 		}
 		ImGui::End();
 

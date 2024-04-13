@@ -34,10 +34,10 @@ private:
 	glm::mat4 view;
 
 	/* Functions */
-	void UpdateCameraMovement(CameraMovement cameraMovement);
-	void UpdateCameraRatation(glm::vec2 mouseMoveDelta);
-	void UpdateCameraScale(float mouseScrollDelta);
-	void UpdateCameraScrollMovement(glm::vec2 mouseMoveDelta);
+	void updateCameraMovement(CameraMovement cameraMovement);
+	void updateCameraRatation(glm::vec2 mouseMoveDelta);
+	void updateCameraScale(float mouseScrollDelta);
+	void updateCameraScrollMovement(glm::vec2 mouseMoveDelta);
 
 public:
 	/* Constructor and Deconstructor */
@@ -45,12 +45,12 @@ public:
     ~Camera();
 
 	/* Functions */
-	void Update();
-	void UpdateWindowSize(int width, int height);
+	void update();
+	void updateWindowSize(int width, int height);
 
 	/* Getter and Setter */
-	glm::vec3 getCameraPos();
-	glm::mat4 getProjectionMatrix();
-	glm::mat4 getViewMatrix();
+	const glm::vec3& getCameraPos() const;
+	const glm::mat4& getProjectionMatrix() const;
+	const glm::mat4& getViewMatrix() const;
 };
 

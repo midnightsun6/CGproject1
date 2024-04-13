@@ -85,27 +85,42 @@ namespace CG
 		glfwSetCursorPosCallback(
 			mainWindow,
 			[](GLFWwindow* window, double xpos, double ypos) {
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->input->OnCursorMove(xpos, ypos);
+				ImGuiIO& io = ImGui::GetIO();
+				io.AddMousePosEvent(xpos, ypos);
+
+				if (!io.WantCaptureMouse) {
+					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+					auto mainScene = app->GetMainScene();
+					mainScene->input->OnCursorMove(xpos, ypos);
+				}
 			}
 		);
 
 		glfwSetMouseButtonCallback(
 			mainWindow,
 			[](GLFWwindow* window, int button, int action, int mods) {
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->input->OnMouseButton(button, action, mods);
+				ImGuiIO& io = ImGui::GetIO();
+				io.AddMouseButtonEvent(button, action);
+
+				if (!io.WantCaptureMouse) {
+					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+					auto mainScene = app->GetMainScene();
+					mainScene->input->OnMouseButton(button, action, mods);
+				}
 			}
 		);
 
 		glfwSetScrollCallback(
 			mainWindow,
 			[](GLFWwindow* window, double xoffset, double yoffset) {
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->input->OnMouseScroll(xoffset, yoffset);
+				ImGuiIO& io = ImGui::GetIO();
+				io.AddMouseWheelEvent(xoffset, yoffset);
+
+				if (!io.WantCaptureMouse) {
+					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+					auto mainScene = app->GetMainScene();
+					mainScene->input->OnMouseScroll(xoffset, yoffset);
+				}
 			}
 		);
 
@@ -180,7 +195,7 @@ namespace CG
 
 			if (glfwGetTime() - timer > 1.0) {
 				timer++;
-				std::cout << frames << ' ' << updates << '\n';
+				//std::cout << frames << ' ' << updates << '\n';
 				frames = 0, updates = 0;
 			}
 		}

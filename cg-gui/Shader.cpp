@@ -1,9 +1,12 @@
 #include "Shader.h"
 
 const GLchar* Shader::ReadShader(const char* filename) {
-	FILE* infile = fopen(filename, "rb");
+	std::string filenameStr = filename;
+	std::string path = "./res/shaders/" + filenameStr;
+
+	FILE* infile = fopen(path.data(), "rb");
 	if (!infile) {
-		std::cout << "Unable to open file '" << filename << "'\n";
+		std::cout << "Unable to open file '" << path << "'\n";
 		return NULL;
 	}
 
@@ -71,22 +74,22 @@ void Shader::use() {
 	glUseProgram(program);
 }
 
-void Shader::setBool(const std::string& name, bool value) const {
+void Shader::setBool(const std::string& name, const bool& value) const {
 	glUniform1i(glGetUniformLocation(this->program, name.c_str()), (int)value);
 }
 
-void Shader::setInt(const std::string& name, int value) const {
+void Shader::setInt(const std::string& name, const int& value) const {
 	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
 }
-void Shader::setUint(const std::string& name, unsigned int value) const {
+void Shader::setUint(const std::string& name, const unsigned int& value) const {
 	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
 }
 
-void Shader::setFloat(const std::string& name, float value) const {
+void Shader::setFloat(const std::string& name, const float& value) const {
 	glUniform1f(glGetUniformLocation(this->program, name.c_str()), value);
 }
 
-void Shader::setMat4(const std::string& name, glm::mat4 value) const {
+void Shader::setMat4(const std::string& name, const glm::mat4& value) const {
 	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
 }
 

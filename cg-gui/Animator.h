@@ -31,14 +31,14 @@ struct KeyFrame {
 struct Track {
 	std::vector<KeyFrame> keyFrames;
 
-	glm::mat4 interpolate(float currentTime) {
+	glm::mat4 interpolate(float currentTime, float speed) {
 		// If no animation, skip it.
 		if (keyFrames.empty()) {
 			return glm::mat4(1.0f);
 		}
 
 		// If current time is greater than last frame of animation, keep it.
-		if (currentTime >= keyFrames.back().time) {
+		if (currentTime >= keyFrames.back().time / speed) {
 			KeyFrame& lastFrame = keyFrames.back();
 			glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), lastFrame.position);
 			glm::mat4 rotationMatrix = glm::mat4_cast(lastFrame.rotation);
@@ -50,8 +50,9 @@ struct Track {
 		for (int i = 0; i < keyFrames.size() - 1; ++i) {
 			KeyFrame& startFrame = keyFrames[i], &endFrame = keyFrames[i + 1];
 
-			if (startFrame.time <= currentTime && currentTime <= endFrame.time) {
-				float progression = (currentTime - startFrame.time) / (endFrame.time - startFrame.time);
+			float startTime = startFrame.time / speed, endTime = endFrame.time / speed;
+			if (startTime <= currentTime && currentTime <= endTime) {
+				float progression = (currentTime - startTime) / (endTime - startTime);
 
 				glm::vec3 position = glm::mix(startFrame.position, endFrame.position, progression);
 				glm::quat rotation = glm::slerp(startFrame.rotation, endFrame.rotation, progression);
@@ -70,7 +71,7 @@ struct Track {
 struct AnimationClip {
 	std::string name;
 	std::unordered_map<std::string, Track> tracks;
-	float duration;
+	float duration = 1, speed = 1;
 	bool isLoop = false;
 };
 
@@ -87,8 +88,9 @@ public:
 	~Animator();
 
 	void update(float dt);
-	void transitionTo(std::string animationName);
+	void play(const char* animationName);
 	void addAnimation(AnimationClip animation);
+	void addAnimation(const char* filename);
 
 	const glm::mat4& getAnimationMatrix(std::string part);
 };

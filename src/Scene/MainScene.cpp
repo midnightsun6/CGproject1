@@ -1,7 +1,7 @@
 ﻿#include "MainScene.h"
 
 MainScene::MainScene() {
-
+    totalTime = 0;
 }
 
 MainScene::~MainScene() {}
@@ -23,25 +23,23 @@ bool MainScene::Initialize() {
     box.Init(GL_TRIANGLES);
     setBox(1);
 
-    baseObjShader.setShader("./res/shaders/shader.vs", "./res/shaders/shader.fs");
-
     // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
 
-    //testModel.setModel("./res/models/nanosuit/nanosuit.obj");
-    android.setModel("./res/models/Android Robot/Android Robot.obj");
-    android.addAnimation();
-    modelShader.setShader("./res/shaders/model_loading.vs", "./res/shaders/model_loading.fs");
+    // Load shaders
+    baseObjShader.setShader("shader.vs", "shader.fs");
+    modelShader.setShader("model_loading.vs", "model_loading.fs");
 
     return true;
 }
 
 void MainScene::Update(double dt) {
+    // Update total time for object movement
     totalTime += dt;
-    camera.Update();
-    android.update(dt);
 
-    if (input->getKeyPress('z')) {
-        android.playAnimation();
+    // Update all objects
+    camera.update();
+    for (auto& [_, m] : models) {
+        m.update(dt);
     }
 
     float angle = 90, speed = 5;
@@ -49,9 +47,7 @@ void MainScene::Update(double dt) {
     box.Rotate(totalTime * angle, 0, 1, 0);
     box.Translate(totalTime * speed, 0, 0);
 
-    glm::mat4 modelMatrix(1.0f);
-    //modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(totalTime * 0.0001, 0, 0));
-    modelShader.setMat4("model", modelMatrix);
+    modelShader.setMat4("model", glm::mat4(1.f));
 }
 
 void MainScene::Render() {
@@ -66,26 +62,38 @@ void MainScene::Render() {
     }
 
     modelShader.use();
-    /*modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.75f, 0.0f)) * modelMatrix;
-    modelMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)) * modelMatrix;*/
-    //glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
-    glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
-    glUniformMatrix4fv(glGetUniformLocation(modelShader.getProgram(), "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+    modelShader.setMat4("projection", camera.getProjectionMatrix());
+    modelShader.setMat4("view", camera.getViewMatrix());
     
     // Light
     glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
     glm::vec3 lightColor = glm::vec3(1.0f);
+    modelShader.setVec3("viewPos", camera.getCameraPos());
     modelShader.setVec3("lightPos", camera.getCameraPos());
     modelShader.setVec3("lightColor", lightColor);
-    modelShader.setVec3("viewPos", camera.getCameraPos());
 
-    //testModel.draw(modelShader);
-    android.draw(modelShader);
+    for (auto& [_, m] : models) {
+        m.draw(modelShader);
+    }
 }
 
 void MainScene::OnResize(int width, int height) {
-    camera.UpdateWindowSize(width, height);
+    camera.updateWindowSize(width, height);
     std::cout << "MainScene Resize: " << width << " " << height << std::endl;
+}
+
+void MainScene::loadModel(const char* path, const char* name) {
+    Model model;
+    model.setModel(path);
+    this->models[name] = model;
+}
+
+void MainScene::loadAnimation(const char* name, const char* path) {
+    models[name].addAnimation(path);
+}
+
+void MainScene::playAnimation(const char* objName, const char* animation) {
+    models[objName].playAnimation(animation);
 }
 
 void MainScene::setBox(float size) {

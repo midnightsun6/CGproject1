@@ -5,7 +5,8 @@
 
 unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
-void Model::loadModel(std::string path) {
+void Model::loadModel(std::string filename) {
+	std::string path = "./res/models/" + filename;
 
 	Assimp::Importer import;
 	// aiProcess_Triangulate: If model is not build by triangles, force turn all shape to triangles.
@@ -17,21 +18,23 @@ void Model::loadModel(std::string path) {
 		return;
 	}
 
+	std::cout << "Loading model\n";
 	this->directory = path.substr(0, path.find_last_of('/'));
 	this->processNode(scene->mRootNode, scene);
 	this->resortMesh();
+	std::cout << "Loading model Successfully: " << filename << '\n';
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
 	// Add all node in meshes.
 	for (GLuint i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
-		std::cout << aimesh->mName.C_Str() << '\n';
+		//std::cout << aimesh->mName.C_Str() << '\n';
 		
 		// Get mesh
 		Mesh mesh = this->processMesh(aimesh, scene);
 		meshTable[mesh.getName()] = mesh;
-
+		parts.push_back(mesh.getName());
 		this->meshes.push_back(mesh);
 	}
 
@@ -203,56 +206,12 @@ void Model::resortMesh() {
 	}
 }
 
-void Model::addAnimation() {
-	AnimationClip clip;
-	clip.name = "test";
-	clip.isLoop = true;
-
-	Track track;
-	track.keyFrames = {
-		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
-		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 75), glm::vec3(1, 1, 1)),
-		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
-		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 75), glm::vec3(1, 1, 1)),
-		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 30), glm::vec3(1, 1, 1)),
-	};
-	clip.tracks["Body LeftUpperHand"] = track;
-
-	track.keyFrames = {
-		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 20), glm::vec3(1, 1, 1)),
-		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 20), glm::vec3(1, 1, 1)),
-		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-	};
-	clip.tracks["Body LeftUpperHand LeftElbow"] = track;
-
-	track.keyFrames = {
-		KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 45, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, -45, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 45, 0), glm::vec3(1, 1, 1)),
-		KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-	};
-	clip.tracks["Body"] = track;
-
-	//track.keyFrames = {
-	//	KeyFrame(0.0f, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)),
-	//	KeyFrame(0.5f, glm::vec3(0, 0, 0), glm::vec3(0, 90, 0), glm::vec3(1, 1, 1)),
-	//	KeyFrame(1.0f, glm::vec3(0, 0, 0), glm::vec3(0, 180, 0), glm::vec3(1, 1, 1)),
-	//	KeyFrame(1.5f, glm::vec3(0, 0, 0), glm::vec3(0, 270, 0), glm::vec3(1, 1, 1)),
-	//	KeyFrame(2.0f, glm::vec3(0, 0, 0), glm::vec3(0, 360, 0), glm::vec3(1, 1, 1)),
-	//};
-	//clip.tracks["Body Head"] = track;
-
-	clip.duration = 2.0f;
-
-	animator.addAnimation(clip);
-	animator.transitionTo("test");
+void Model::addAnimation(const char* filename) {
+	animator.addAnimation(filename);
 }
 
-void Model::playAnimation() {
-	animator.transitionTo("test");
+void Model::playAnimation(const char* name) {
+	animator.play(name);
 }
 
 void Model::update(float dt) {
@@ -261,18 +220,22 @@ void Model::update(float dt) {
 
 Model::Model() {}
 
-Model::Model(const char* path) {
+Model::Model(std::string& path) {
 	this->loadModel(path);
 }
 
-void Model::setModel(const char* path) {
-	this->loadModel(path);
+void Model::setModel(const char* filename) {
+	this->loadModel(filename);
 }
 
 void Model::draw(Shader& shader) {
 	for (auto& mesh : meshes) {
 		mesh.draw(shader, animator, glm::mat4(1.f));
 	}
+}
+
+const std::vector<std::string>& Model::getPartsName() {
+	return this->parts;
 }
 
 unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma) {
