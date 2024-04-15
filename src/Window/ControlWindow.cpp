@@ -122,13 +122,13 @@ namespace CG
 
 			ImGui::BeginChild("Animations", ImVec2(0, 150), true, ImGuiWindowFlags_HorizontalScrollbar);
 			{
-				static bool isExport = false;
+				static bool isExport = false, isDeleteAnimation = false;
 
 				ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.0f, 0.5f, 0.0f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.0f, 0.6f, 0.0f, 1.0f));
 				ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.0f, 0.7f, 0.0f, 1.0f));
 
-				std::vector<std::string> remove;
+				static std::vector<std::string> remove;
 				int i = 0;
 				for (auto& [name, animation] : animations) {
 					if (ImGui::Selectable(name.c_str())) {
@@ -149,20 +149,11 @@ namespace CG
 							isExport = true;
 						}
 						if (ImGui::MenuItem("Delete Animation")) {
-							remove.push_back(name);
+							isDeleteAnimation = true;
 						}
 						ImGui::EndPopup();
 					}
 					i++;
-				}
-
-				// Delete the animations
-				for (std::string& idx : remove) {
-					animations.erase(idx);
-					targetScene->deleteAnimation(modelsName[modelsIdx], idx.c_str());
-					if (idx == selectedAnimation) {
-						selectedAnimation = "";
-					}
 				}
 
 				ImGui::PopStyleColor(3);
@@ -178,17 +169,45 @@ namespace CG
 						};
 
 						ImGui::InputText("Export Filename", exportName, sizeof(exportName));
-						if (ImGui::Button("Cancel")) {
-							clearExportParameters();
-						}
-						ImGui::SameLine(0, 30);
 						if (ImGui::Button("Export")) {
 							targetScene->exportAnimation(modelsName[modelsIdx], exportName, selectedAnimation.c_str());
 							clearExportParameters();
 						}
+						ImGui::SameLine(0, 30);
+						if (ImGui::Button("Cancel")) {
+							clearExportParameters();
+						}
+						
 					}
 					ImGui::End();
 				}
+
+				if (isDeleteAnimation) {
+					ImGui::Begin("Delete Animation", &isDeleteAnimation);
+					{
+						ImGui::Text("Are you sure you want to delete?");
+						if (ImGui::Button("Yes")) {
+							isDeleteAnimation = false;
+							remove.push_back(selectedAnimation);
+						}
+						ImGui::SameLine(0, 30);
+						if (ImGui::Button("No")) {
+							isDeleteAnimation = false;
+						}
+						
+					}
+					ImGui::End();
+				}
+
+				// Delete the animations
+				for (std::string& idx : remove) {
+					animations.erase(idx);
+					targetScene->deleteAnimation(modelsName[modelsIdx], idx.c_str());
+					if (idx == selectedAnimation) {
+						selectedAnimation = "";
+					}
+				}
+				remove.clear();
 			}
 			ImGui::EndChild();
 
@@ -360,10 +379,6 @@ namespace CG
 					ImGui::InputFloat("Play Speed", &speed);
 					ImGui::Checkbox("Is Loop", &isLoop);
 
-					if (ImGui::Button("Cancel")) {
-						clearAddAnimationWindow();
-					}
-					ImGui::SameLine(0, 30);
 					if (ImGui::Button("Add")) {
 						AnimationClip clip;
 						clip.tracks = tracks;
@@ -376,6 +391,12 @@ namespace CG
 						clearAddAnimationWindow();
 						clearAnimationContent();
 					}
+					ImGui::SameLine(0, 30);
+					if (ImGui::Button("Cancel")) {
+						clearAddAnimationWindow();
+					}
+					
+					
 				}
 				ImGui::End();
 			}
@@ -384,13 +405,13 @@ namespace CG
 				ImGui::Begin("Clear All KeyFrames", &isClearAllKF);
 				{
 					ImGui::Text("Do you want to clear all keyframes?");
-					if (ImGui::Button("No")) {
-						isClearAllKF = false;
-					}
-					ImGui::SameLine(0, 30);
 					if (ImGui::Button("Yes")) {
 						isClearAllKF = false;
 						clearAnimationContent();
+					}
+					ImGui::SameLine(0, 30);
+					if (ImGui::Button("No")) {
+						isClearAllKF = false;
 					}
 				}
 				ImGui::End();
