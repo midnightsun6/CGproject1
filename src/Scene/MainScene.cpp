@@ -88,12 +88,35 @@ void MainScene::loadModel(const char* path, const char* name) {
     this->models[name] = model;
 }
 
-void MainScene::loadAnimation(const char* name, const char* path) {
-    models[name].addAnimation(path);
+void MainScene::importAnimation(const char* name, const char* path) {
+    models[name].importAnimation(path);
+}
+
+void MainScene::exportAnimation(const char* objname, const char* filename, const char* animation) {
+    models[objname].exportAnimtion(filename, animation);
+}
+
+void MainScene::addAnimation(const char* name, AnimationClip clip) {
+    models[name].addAnimation(clip);
+}
+
+void MainScene::deleteAnimation(const char* objname, const char* animation) {
+    models[objname].deleteAnimation(animation);
 }
 
 void MainScene::playAnimation(const char* objName, const char* animation) {
     models[objName].playAnimation(animation);
+}
+
+const std::unordered_map<std::string, Model>& MainScene::getModels() const {
+    return this->models;
+}
+
+const Model& MainScene::getModel(const char* name) const {
+    if (models.count(name)) {
+        return models.at(name);
+    }
+    return Model();
 }
 
 void MainScene::setBox(float size) {

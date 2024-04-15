@@ -1,4 +1,4 @@
-#include "App.h"
+﻿#include "App.h"
 
 namespace CG
 {
@@ -31,7 +31,7 @@ namespace CG
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
 		// Create window with graphics context
-		mainWindow = glfwCreateWindow(1280, 720, "cg-gui", nullptr, nullptr);
+		mainWindow = glfwCreateWindow(width, height, "cg-gui", nullptr, nullptr);
 		if (mainWindow == nullptr)
 			return false;
 		glfwMakeContextCurrent(mainWindow);
@@ -53,6 +53,8 @@ namespace CG
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+		io.ConfigFlags |= ImGuiConfigFlags_DpiEnableScaleViewports;
+		io.DisplaySize = ImVec2(width, height);
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -66,6 +68,7 @@ namespace CG
 			mainWindow,
 			[](GLFWwindow* window, int w, int h)
 			{
+				glViewport(0, 0, w, h);
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
 				mainScene->OnResize(w, h);
@@ -76,18 +79,23 @@ namespace CG
 			mainWindow,
 			[](GLFWwindow* window, int key, int scancode, int action, int mode)
 			{
-				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
-				auto mainScene = app->GetMainScene();
-				mainScene->input->OnKeyboard(key, action);
+				ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mode);
+
+				ImGuiIO& io = ImGui::GetIO();
+				if (io.WantCaptureKeyboard) {
+					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
+					auto mainScene = app->GetMainScene();
+					mainScene->input->OnKeyboard(key, action);
+				}
 			}
 		);
 
 		glfwSetCursorPosCallback(
 			mainWindow,
 			[](GLFWwindow* window, double xpos, double ypos) {
-				ImGuiIO& io = ImGui::GetIO();
-				io.AddMousePosEvent(xpos, ypos);
+				ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 
+				ImGuiIO& io = ImGui::GetIO();
 				if (!io.WantCaptureMouse) {
 					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 					auto mainScene = app->GetMainScene();
@@ -99,9 +107,9 @@ namespace CG
 		glfwSetMouseButtonCallback(
 			mainWindow,
 			[](GLFWwindow* window, int button, int action, int mods) {
-				ImGuiIO& io = ImGui::GetIO();
-				io.AddMouseButtonEvent(button, action);
+				ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 
+				ImGuiIO& io = ImGui::GetIO();
 				if (!io.WantCaptureMouse) {
 					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 					auto mainScene = app->GetMainScene();
@@ -113,9 +121,9 @@ namespace CG
 		glfwSetScrollCallback(
 			mainWindow,
 			[](GLFWwindow* window, double xoffset, double yoffset) {
-				ImGuiIO& io = ImGui::GetIO();
-				io.AddMouseWheelEvent(xoffset, yoffset);
+				ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 
+				ImGuiIO& io = ImGui::GetIO();
 				if (!io.WantCaptureMouse) {
 					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 					auto mainScene = app->GetMainScene();
@@ -221,7 +229,6 @@ namespace CG
 	{
 		int display_w, display_h;
 		glfwGetFramebufferSize(mainWindow, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
 
 		mainScene->Render();
 	}

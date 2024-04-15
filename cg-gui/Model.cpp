@@ -34,7 +34,6 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 		// Get mesh
 		Mesh mesh = this->processMesh(aimesh, scene);
 		meshTable[mesh.getName()] = mesh;
-		parts.push_back(mesh.getName());
 		this->meshes.push_back(mesh);
 	}
 
@@ -153,6 +152,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		sum += glm::vec3(pos.x, pos.y, pos.z);
 	}
 	glm::vec3 center = sum / (float)mesh->mNumVertices;
+	this->center += center;
 	
 	return Mesh(name, vertices, indices, textures, mtl, center);
 }
@@ -206,21 +206,48 @@ void Model::resortMesh() {
 	}
 }
 
-void Model::addAnimation(const char* filename) {
-	animator.addAnimation(filename);
+void Model::importAnimation(const char* filename) {
+	animator.importAnimation(filename);
+}
+
+void Model::exportAnimtion(const char* filename, const char* animation) {
+	animator.exportAnimation(filename, animation);
+}
+
+void Model::addAnimation(AnimationClip clip) {
+	animator.addAnimation(clip);
+}
+
+void Model::deleteAnimation(const char* animation) {
+	animator.deleteAnimation(animation);
 }
 
 void Model::playAnimation(const char* name) {
 	animator.play(name);
 }
 
+void Model::translate(float x, float y, float z) {
+	modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(x, y, z)) * modelMatrix;
+}
+
+void Model::rotate(float angle, float x, float y, float z) {
+	modelMatrix = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::vec3(x, y, z)) * modelMatrix;
+}
+
+void Model::scale(float x, float y, float z) {
+	modelMatrix = glm::scale(glm::mat4(1.f), glm::vec3(x, y, z)) * modelMatrix;
+}
+
 void Model::update(float dt) {
 	animator.update(dt);
 }
 
-Model::Model() {}
+Model::Model() {
+	modelMatrix = glm::mat4(1.f);
+}
 
 Model::Model(std::string& path) {
+	modelMatrix = glm::mat4(1.f);
 	this->loadModel(path);
 }
 
@@ -230,18 +257,22 @@ void Model::setModel(const char* filename) {
 
 void Model::draw(Shader& shader) {
 	for (auto& mesh : meshes) {
-		mesh.draw(shader, animator, glm::mat4(1.f));
+		mesh.draw(shader, animator, modelMatrix);
 	}
 }
 
-const std::vector<std::string>& Model::getPartsName() {
-	return this->parts;
+const std::vector<Mesh>& Model::getMeshes() const {
+	return this->meshes;
+}
+
+const Animator& Model::getAnimator() const {
+	return this->animator;
 }
 
 unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma) {
 	std::string filename = std::string(path);
 	filename = directory + '/' + filename;
-
+	
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 

@@ -91,6 +91,10 @@ std::string Mesh::getName() const {
 	return this->name;
 }
 
+const std::vector<Mesh>& Mesh::getChildren() const {
+	return this->children;
+}
+
 void Mesh::setCenter(glm::vec3 center) {
 	this->transform = glm::translate(glm::mat4(1.f), center);
 	this->invTransform = glm::translate(glm::mat4(1.f), -center);
@@ -103,10 +107,6 @@ void Mesh::addChild(Mesh mesh) {
 void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel) {
 	glm::mat4 animation = animator.getAnimationMatrix(this->name);
 	glm::mat4 model = parentModel * transform * animation * invTransform;
-	/*glm::mat4 model(1.f);
-	if (name == "Body LeftUpperHand LeftElbow LeftLowerHand")
-		model = glm::rotate(glm::mat4(1.f), glm::radians(30.f), glm::vec3(0, 0, 1));*/
-	//transform = anime;
 	// Draw the children meshes.
 	for (auto& child : children) {
 		child.draw(shader, animator, model);

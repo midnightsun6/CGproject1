@@ -41,7 +41,13 @@ public:
 
 	/* OpenGL Model functions */
 	void loadModel(const char* path, const char* name);
-	void loadAnimation(const char* name, const char* path);
+	void importAnimation(const char* name, const char* path);
+	void exportAnimation(const char* objname, const char* filename, const char* animation);
+	void addAnimation(const char* name, AnimationClip clip);
+	void deleteAnimation(const char* objname, const char* animation);
 	void playAnimation(const char* objName, const char* animation);
+
+	const std::unordered_map<std::string, Model>& getModels() const;
+	const Model& getModel(const char* name) const;
 };
 

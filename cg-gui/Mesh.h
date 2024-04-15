@@ -46,10 +46,11 @@ public:
 	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures, Material material);
 	Mesh(std::string name, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures, Material material, glm::vec3 center);
 
-	std::string getName() const;
-
 	void setCenter(glm::vec3 center);
 	void addChild(Mesh mesh);
 	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel);
+
+	std::string getName() const;
+	const std::vector<Mesh>& getChildren() const;
 };
 

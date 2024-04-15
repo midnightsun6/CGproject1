@@ -6,19 +6,17 @@ namespace CG
 {
 	class ControlWindow
 	{
+	private:
+		MainScene* targetScene;
+
+		bool showDemoWindow;
+
 	public:
 		ControlWindow();
 
 		auto Initialize() -> bool;
 		void Display();
 
-	private:
-		bool showDemoWindow;
-
-	private:
-		MainScene* targetScene;
-
-	public:
 		void SetTargetScene(MainScene* scene)
 		{
 			targetScene = scene;

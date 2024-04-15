@@ -12,6 +12,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <set>
+#include <cstring>
 
 #include <imgui.h>
 #include <imgui_internal.h>

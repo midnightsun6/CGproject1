@@ -11,6 +11,7 @@ namespace CG
         void Render();
 
         GLFWwindow* mainWindow;
+        int width = 1280, height = 760;
 
         ControlWindow* controlWindow;
         bool showControlWindow;

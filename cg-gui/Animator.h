@@ -4,6 +4,7 @@
 struct KeyFrame {
 	float time;
 	glm::vec3 position;
+	glm::vec3 rotationAngle;
 	glm::quat rotation;
 	glm::vec3 scale;
 
@@ -13,18 +14,32 @@ struct KeyFrame {
 
 	KeyFrame(float time, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) {
 		this->time = time;
-		position = pos;
-		rot.x = glm::radians(rot.x), rot.y = glm::radians(rot.y), rot.z = glm::radians(rot.z);
-		rotation = glm::quat(rot);
-		scale = sca;
+		this->position = pos;
+		this->rotationAngle = rot;
+		this->rotation = glm::quat(rotationAngle);
+		this->scale = sca;
 	}
 
 	KeyFrame(float time, float posX, float posY, float posZ, float angleX, float angleY, float angleZ, float scaleX, float scaleY, float scaleZ) {
 		this->time = time;
 		position = glm::vec3(posX, posY, posZ);
+		rotationAngle = glm::vec3(angleX, angleY, angleZ);
 		rotation = glm::quat(glm::vec3(glm::radians(angleX), glm::radians(angleY), glm::radians(angleZ)));
 		scale = glm::vec3(scaleX, scaleY, scaleZ);
 	}
+
+	bool operator < (const KeyFrame& rhs) const {
+		return this->time < rhs.time;
+	}
+
+	std::string toString() {
+		std::stringstream ss;
+		ss << "Time: " << this->time << '\n'
+			<< "\tPosition (" << this->position.x << ", " << this->position.y << ", " << this->position.z << ")\n"
+			<< "\tRotation (" << rotationAngle.x << ", " << rotationAngle.y << ", " << rotationAngle.z << ")\n"
+			<< "\tScale (" << this->scale.x << ", " << this->scale.y << ", " << this->scale.z << ")\n";
+		return ss.str();
+	};
 };
 
 // For each mesh how to move.
@@ -82,16 +97,21 @@ private:
 
 	std::string currAnimation;
 	std::unordered_map<std::string, AnimationClip> animations;
-	
+
 public:
 	Animator();
 	~Animator();
 
 	void update(float dt);
 	void play(const char* animationName);
-	void addAnimation(AnimationClip animation);
-	void addAnimation(const char* filename);
+	void clear();
 
+	void addAnimation(AnimationClip animation);
+	void deleteAnimation(const char* animation);
+	void importAnimation(const char* filename);
+	void exportAnimation(const char* filename, const char* animation);
+
+	const std::unordered_map<std::string, AnimationClip>& getAnimations() const;
 	const glm::mat4& getAnimationMatrix(std::string part);
 };
 
