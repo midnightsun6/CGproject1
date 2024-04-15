@@ -88,24 +88,41 @@ void MainScene::loadModel(const char* path, const char* name) {
     this->models[name] = model;
 }
 
+void MainScene::transformateModel(const char* objname, float translate[3], float rotation[3], float scale[3]) {
+    if (models.count(objname)) {
+        models[objname].resetMatrix();
+        models[objname].transformate(translate, rotation, scale);
+    }
+}
+
 void MainScene::importAnimation(const char* name, const char* path) {
-    models[name].importAnimation(path);
+    if (models.count(name)) {
+        models[name].importAnimation(path);
+    }
 }
 
 void MainScene::exportAnimation(const char* objname, const char* filename, const char* animation) {
-    models[objname].exportAnimtion(filename, animation);
+    if (models.count(objname)) {
+        models[objname].exportAnimtion(filename, animation);
+    }
 }
 
 void MainScene::addAnimation(const char* name, AnimationClip clip) {
-    models[name].addAnimation(clip);
+    if (models.count(name)) {
+        models[name].addAnimation(clip);
+    }
 }
 
 void MainScene::deleteAnimation(const char* objname, const char* animation) {
-    models[objname].deleteAnimation(animation);
+    if (models.count(objname)) {
+        models[objname].deleteAnimation(animation);
+    }
 }
 
 void MainScene::playAnimation(const char* objName, const char* animation) {
-    models[objName].playAnimation(animation);
+    if (models.count(objName)) {
+        models[objName].playAnimation(animation);
+    }
 }
 
 const std::unordered_map<std::string, Model>& MainScene::getModels() const {

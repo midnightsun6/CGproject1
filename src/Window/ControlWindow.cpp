@@ -71,6 +71,9 @@ namespace CG
 		ImGui::Begin("Load Object and Animation");
 		{
 			static char path[1024], newName[1024], animation[1024];
+			static float tra[3] = { 0, 0, 0 }, rot[3] = { 0, 0, 0 }, sca[3] = { 1, 1, 1 };
+
+			// Loading Object model
 			ImGui::InputText("Object Path", path, sizeof(path));
 			ImGui::InputText("Name for Object", newName, sizeof(newName));
 			if (ImGui::Button("Load Object")) {
@@ -79,10 +82,23 @@ namespace CG
 			}
 			ImGui::NewLine();
 
+			// Loading Animation of the model.
 			ImGui::Combo("Model Name", &modelsIdx, modelsName.data(), modelsName.size());
 			ImGui::InputText("Animation Path", animation, sizeof(animation));
 			if (ImGui::Button("Load Animation into Object")) {
 				targetScene->importAnimation(modelsName[modelsIdx], animation);
+			}
+			ImGui::NewLine();
+
+			// Parameters of model
+			if (!modelsName.empty()) {
+				ImGui::Text("Model Parameters");
+				ImGui::InputFloat3("Translate", tra);
+				ImGui::InputFloat3("Rotation", rot);
+				ImGui::InputFloat3("Scale", sca);
+				if (ImGui::Button("Apply")) {
+					targetScene->transformateModel(modelsName[modelsIdx], tra, rot, sca);
+				}
 			}
 		}
 		ImGui::End();
@@ -144,6 +160,9 @@ namespace CG
 				for (std::string& idx : remove) {
 					animations.erase(idx);
 					targetScene->deleteAnimation(modelsName[modelsIdx], idx.c_str());
+					if (idx == selectedAnimation) {
+						selectedAnimation = "";
+					}
 				}
 
 				ImGui::PopStyleColor(3);
@@ -176,6 +195,12 @@ namespace CG
 			if (ImGui::Button("Play Animation")) {
 				targetScene->playAnimation(modelsName[modelsIdx], selectedAnimation.c_str());
 			}
+
+			std::string selectedLabel = "Selected Animation: " + selectedAnimation;
+			float windowWidth = ImGui::GetContentRegionAvail().x;
+			float itemWidth = ImGui::CalcTextSize(selectedLabel.c_str()).x;
+			ImGui::SameLine(windowWidth - itemWidth);
+			ImGui::Text(selectedLabel.c_str());
 		}
 		ImGui::End();
 

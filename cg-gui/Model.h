@@ -10,6 +10,7 @@ private:
 	Animator animator;
 
 	glm::vec3 center;
+	glm::mat4 transform, invTransform;
 	glm::mat4 modelMatrix;
 
 	std::unordered_map<std::string, Mesh> meshTable; // <name, index> to create child-parent meshes.
@@ -36,9 +37,8 @@ public:
 	void playAnimation(const char* name);
 
 	/* Model Operation */
-	void translate(float x, float y, float z);
-	void rotate(float angle, float x, float y, float z);
-	void scale(float x, float y, float z);
+	void resetMatrix();
+	void transformate(float tra[3], float rot[3], float sca[3]);
 
 	/* Function */
 	void update(float dt);

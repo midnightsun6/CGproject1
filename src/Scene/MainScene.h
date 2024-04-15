@@ -41,6 +41,7 @@ public:
 
 	/* OpenGL Model functions */
 	void loadModel(const char* path, const char* name);
+	void transformateModel(const char* objname, float translate[3], float rotation[3], float scale[3]);
 	void importAnimation(const char* name, const char* path);
 	void exportAnimation(const char* objname, const char* filename, const char* animation);
 	void addAnimation(const char* name, AnimationClip clip);

@@ -21,7 +21,10 @@ void Model::loadModel(std::string filename) {
 	std::cout << "Loading model\n";
 	this->directory = path.substr(0, path.find_last_of('/'));
 	this->processNode(scene->mRootNode, scene);
+	this->center /= (float)meshes.size();
 	this->resortMesh();
+	this->transform = glm::translate(glm::mat4(1.f), center);
+	this->invTransform = glm::translate(glm::mat4(1.f), -center);
 	std::cout << "Loading model Successfully: " << filename << '\n';
 }
 
@@ -152,6 +155,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		sum += glm::vec3(pos.x, pos.y, pos.z);
 	}
 	glm::vec3 center = sum / (float)mesh->mNumVertices;
+
 	this->center += center;
 	
 	return Mesh(name, vertices, indices, textures, mtl, center);
@@ -226,16 +230,19 @@ void Model::playAnimation(const char* name) {
 	animator.play(name);
 }
 
-void Model::translate(float x, float y, float z) {
-	modelMatrix = glm::translate(glm::mat4(1.f), glm::vec3(x, y, z)) * modelMatrix;
+void Model::resetMatrix() {
+	modelMatrix = glm::mat4(1.f);
 }
 
-void Model::rotate(float angle, float x, float y, float z) {
-	modelMatrix = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::vec3(x, y, z)) * modelMatrix;
-}
+void Model::transformate(float tra[3], float rot[3], float sca[3]) {
+	glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(tra[0], tra[1], tra[2]));
+	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(sca[0], sca[1], sca[2]));
+	glm::mat4 rotate = glm::mat4(1.f);
+	for (int i = 0; i < 3; i++) {
+		rotate *= glm::rotate(glm::mat4(1.f), glm::radians(rot[i]), glm::vec3(i == 0, i == 1, i == 2));
+	}
 
-void Model::scale(float x, float y, float z) {
-	modelMatrix = glm::scale(glm::mat4(1.f), glm::vec3(x, y, z)) * modelMatrix;
+	modelMatrix = transform * translate * rotate * scale * invTransform;
 }
 
 void Model::update(float dt) {
