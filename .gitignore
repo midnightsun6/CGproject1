@@ -1,2 +1,3 @@
 .vs
 cg-gui/x64
+build/Debugx64/cg-gui.pdb

@@ -236,14 +236,17 @@ namespace CG
 			static bool isAddAnimation = false, isClearAllKF = false;;
 
 			// Create TreeNode list table for mesh.
+			//ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 			auto createModelPartsTable = [&](const Mesh& mesh, auto& createModelPartsTable) -> void {
-				if (ImGui::TreeNode(mesh.getName().c_str())) {
-					// Whether by right-clicking
-					if (ImGui::IsItemClicked(1)) {
-						selectedPart = mesh.getName();
-					}
+				bool nodeOpen = ImGui::TreeNode(mesh.getName().c_str());
 
-					// Create the children TreeNode list
+				// Whether by right-clicking
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
+					selectedPart = mesh.getName();
+				}
+
+				// Create the children TreeNode list
+				if (nodeOpen) {
 					const auto& children = mesh.getChildren();
 					for (auto& child : children) {
 						createModelPartsTable(child, createModelPartsTable);

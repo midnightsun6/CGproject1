@@ -50,6 +50,8 @@ public:
 	void addChild(Mesh mesh);
 	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel);
 
+	void setName(const std::string& name);
+
 	std::string getName() const;
 	const std::vector<Mesh>& getChildren() const;
 };

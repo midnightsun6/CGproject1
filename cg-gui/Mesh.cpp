@@ -152,3 +152,7 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
+
+void Mesh::setName(const std::string& name) {
+	this->name = name;
+}

@@ -190,17 +190,24 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 
 void Model::resortMesh() {
 	for (int i = meshes.size() - 1; ~i; i--) {
-		Mesh& mesh = meshes[i];
-		std::string parentName = mesh.getName();
-		int lastSpaceIdx = parentName.find_last_of(' ');
-		if (lastSpaceIdx == std::string::npos) {
+		Mesh& mesh = meshTable[meshes[i].getName()];
+
+		// Split the mesh name and parent name
+		std::string origin = mesh.getName();
+		int selfNameSpace = origin.find_last_of(' ');
+		if (selfNameSpace == std::string::npos) {
 			continue;
 		}
-		parentName = parentName.substr(0, lastSpaceIdx);
-
-		if (meshTable.count(parentName)) {
-			meshTable[parentName].addChild(meshTable[mesh.getName()]);
-			meshTable.erase(mesh.getName());
+		std::string self = origin.substr(selfNameSpace + 1);
+		std::string parent = origin.substr(0, selfNameSpace);
+		//std::cout << "Parent: " << parent << ", self: " << self << '\n';
+		mesh.setName(self);
+		
+		// Find parent, if exists, create parent-child hierarchy
+		if (meshTable.count(parent)) {
+			//std::cout << "Find Parent: " << parent << '\n';
+			meshTable[parent].addChild(mesh);
+			meshTable.erase(origin);
 		}
 	}
 
@@ -208,6 +215,14 @@ void Model::resortMesh() {
 	for (auto& [_, mesh] : meshTable) {
 		meshes.push_back(mesh);
 	}
+
+	/*auto dfs = [&](Mesh mesh, auto& dfs) -> void {
+		std::cout << mesh.getName() << '\n';
+		for (auto& m : mesh.getChildren()) {
+			dfs(m, dfs);
+		}
+	};
+	dfs(meshes.front(), dfs);*/
 }
 
 void Model::importAnimation(const char* filename) {
