@@ -82,7 +82,7 @@ namespace CG
 				ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mode);
 
 				ImGuiIO& io = ImGui::GetIO();
-				if (io.WantCaptureKeyboard) {
+				if (!io.WantCaptureKeyboard) {
 					auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 					auto mainScene = app->GetMainScene();
 					mainScene->input->OnKeyboard(key, action);

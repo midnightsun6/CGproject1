@@ -16,6 +16,7 @@ private:
 	std::unordered_map<std::string, Mesh> meshTable; // <name, index> to create child-parent meshes.
 
 	void loadModel(std::string filename);
+	void processNodeFBX(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);

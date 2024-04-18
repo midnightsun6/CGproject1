@@ -134,7 +134,7 @@ namespace CG
 					if (ImGui::Selectable(name.c_str())) {
 						selectedAnimation = name;
 					}
-					if (ImGui::IsItemClicked(1)) {
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Right)) {
 						selectedAnimation = name;
 					}
 
@@ -145,11 +145,11 @@ namespace CG
 							isCopyAnimation = true;
 							copyAnimation = animation;
 						}
-						if (ImGui::MenuItem("Export Animation")) {
-							isExport = true;
-						}
 						if (ImGui::MenuItem("Delete Animation")) {
 							isDeleteAnimation = true;
+						}
+						if (ImGui::MenuItem("Export Animation")) {
+							isExport = true;
 						}
 						ImGui::EndPopup();
 					}
@@ -186,11 +186,18 @@ namespace CG
 					ImGui::Begin("Delete Animation", &isDeleteAnimation);
 					{
 						ImGui::Text("Are you sure you want to delete?");
+
+						float windowWidth = ImGui::GetContentRegionAvail().x;
+						float itemWidth = ImGui::CalcTextSize("Yes").x;
+						ImGui::NewLine();
+						ImGui::SameLine((windowWidth - itemWidth) / 3);
 						if (ImGui::Button("Yes")) {
 							isDeleteAnimation = false;
 							remove.push_back(selectedAnimation);
 						}
-						ImGui::SameLine(0, 30);
+
+						itemWidth = ImGui::CalcTextSize("No").x;
+						ImGui::SameLine((windowWidth - itemWidth) / 3 * 2);
 						if (ImGui::Button("No")) {
 							isDeleteAnimation = false;
 						}
@@ -233,7 +240,7 @@ namespace CG
 			static std::string selectedPart = "";
 			static float keyframe = 0;
 			static float pos[3] = { 0, 0, 0 }, rot[3] = { 0, 0, 0 }, sca[3] = { 1, 1, 1 };
-			static bool isAddAnimation = false, isClearAllKF = false;;
+			static bool isAddAnimation = false, isClearAllKF = false, isOnPreviewAnimation = false;
 
 			// Create TreeNode list table for mesh.
 			//ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -322,6 +329,13 @@ namespace CG
 										remove.push_back(name);
 									}
 								}
+								if (ImGui::MenuItem("Copy and Delete Keyframe")) {
+									copyParameters(name, kf);
+									deleteKeyFrame(track, i);
+									if (track.keyFrames.empty()) {
+										remove.push_back(name);
+									}
+								}
 								ImGui::EndPopup();
 							}
 						}
@@ -354,7 +368,13 @@ namespace CG
 			}
 
 			float windowWidth = ImGui::GetContentRegionAvail().x;
-			float itemWidth = ImGui::CalcTextSize("Clear All KeyFrame").x;
+			float itemWidth = ImGui::CalcTextSize("Preview Animation").x;
+			ImGui::SameLine((windowWidth - itemWidth) / 2);
+			if (ImGui::Button("Preview Animation")) {
+				isOnPreviewAnimation = true;
+			}
+
+			itemWidth = ImGui::CalcTextSize("Clear All KeyFrame").x;
 			ImGui::SameLine(windowWidth - itemWidth);
 			if (ImGui::Button("Clear All KeyFrame")) {
 				isClearAllKF = true;
@@ -392,7 +412,7 @@ namespace CG
 						targetScene->addAnimation(modelsName[modelsIdx], clip);
 
 						clearAddAnimationWindow();
-						clearAnimationContent();
+						//clearAnimationContent();
 					}
 					ImGui::SameLine(0, 30);
 					if (ImGui::Button("Cancel")) {
@@ -404,15 +424,47 @@ namespace CG
 				ImGui::End();
 			}
 
+			if (isOnPreviewAnimation) {
+				static bool isPlaying = false;
+				const Animator& animator = targetScene->getModel(modelsName[modelsIdx]).getAnimator();
+
+				if (!isPlaying) {
+					AnimationClip clip;
+					clip.tracks = tracks;
+					clip.name = "####Preview Animation####";
+					clip.isLoop = false;
+					clip.speed = 1;
+					for (auto& [_, track] : tracks) {
+						clip.duration = std::max(clip.duration, track.keyFrames.back().time);
+					}
+
+					targetScene->addAnimation(modelsName[modelsIdx], clip);
+					targetScene->playAnimation(modelsName[modelsIdx], clip.name.c_str());
+					isPlaying = true;
+				}
+				else if (isPlaying && !animator.isOnPlaying()) {
+					targetScene->deleteAnimation(modelsName[modelsIdx], "####Preview Animation####");
+					isOnPreviewAnimation = false;
+					isPlaying = false;
+				}
+			}
+
 			if (isClearAllKF) {
 				ImGui::Begin("Clear All KeyFrames", &isClearAllKF);
 				{
 					ImGui::Text("Do you want to clear all keyframes?");
+
+					float windowWidth = ImGui::GetContentRegionAvail().x;
+					float itemWidth = ImGui::CalcTextSize("Yes").x;
+					ImGui::NewLine();
+					ImGui::SameLine((windowWidth - itemWidth) / 3);
 					if (ImGui::Button("Yes")) {
 						isClearAllKF = false;
 						clearAnimationContent();
 					}
-					ImGui::SameLine(0, 30);
+
+					itemWidth = ImGui::CalcTextSize("No").x;
+					ImGui::SameLine((windowWidth - itemWidth) / 3 * 2);
 					if (ImGui::Button("No")) {
 						isClearAllKF = false;
 					}

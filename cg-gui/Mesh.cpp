@@ -107,6 +107,7 @@ void Mesh::addChild(Mesh mesh) {
 void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel) {
 	glm::mat4 animation = animator.getAnimationMatrix(this->name);
 	glm::mat4 model = parentModel * transform * animation * invTransform;
+	//glm::mat4 model = parentModel * transform * animation;
 	// Draw the children meshes.
 	for (auto& child : children) {
 		child.draw(shader, animator, model);
@@ -155,4 +156,9 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 
 void Mesh::setName(const std::string& name) {
 	this->name = name;
+}
+
+void Mesh::setTransform(const glm::mat4 transform) {
+	this->transform = transform;
+	this->invTransform = glm::inverse(transform);
 }

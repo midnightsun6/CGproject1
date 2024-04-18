@@ -131,6 +131,10 @@ void Animator::deleteAnimation(const char* animation) {
 	}
 }
 
+const bool Animator::isOnPlaying() const {
+	return this->isPlaying;
+}
+
 const std::unordered_map<std::string, AnimationClip>& Animator::getAnimations() const {
 	return this->animations;
 }

@@ -111,6 +111,7 @@ public:
 	void importAnimation(const char* filename);
 	void exportAnimation(const char* filename, const char* animation);
 
+	const bool isOnPlaying() const;
 	const std::unordered_map<std::string, AnimationClip>& getAnimations() const;
 	const glm::mat4& getAnimationMatrix(std::string part);
 };

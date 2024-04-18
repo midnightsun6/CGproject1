@@ -51,6 +51,7 @@ public:
 	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel);
 
 	void setName(const std::string& name);
+	void setTransform(const glm::mat4 transform);
 
 	std::string getName() const;
 	const std::vector<Mesh>& getChildren() const;

@@ -21,6 +21,7 @@ void Model::loadModel(std::string filename) {
 	std::cout << "Loading model\n";
 	this->directory = path.substr(0, path.find_last_of('/'));
 	this->processNode(scene->mRootNode, scene);
+	//this->processNodeFBX(scene->mRootNode, scene, glm::mat4(1.f));
 	this->center /= (float)meshes.size();
 	this->resortMesh();
 	this->transform = glm::translate(glm::mat4(1.f), center);
@@ -28,11 +29,53 @@ void Model::loadModel(std::string filename) {
 	std::cout << "Loading model Successfully: " << filename << '\n';
 }
 
+void Model::processNodeFBX(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform) {
+	// Add all node in meshes.
+	std::cout << "HI:\n";
+	std::cout << "\tNumMeshes: " << node->mNumMeshes << '\n';
+	std::cout << "\tmNumChildren: " << node->mNumChildren << '\n';
+
+	auto convertToMat4 = [](const aiMatrix4x4& from) -> glm::mat4 {
+		glm::mat4 to;
+
+		to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
+		to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
+		to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
+		to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
+
+		return to;
+	};
+
+	std::cout << '\t' << node->mName.C_Str() << '\n';
+	aiMatrix4x4 aiTransform = node->mTransformation;
+	glm::mat4 transform = parentTransform * convertToMat4(aiTransform);
+	for (int i = 0; i < 4; i++) {
+		std::cout << "[" << transform[i][0] << ", " << transform[i][1] << ", " << transform[i][2] << ", " << transform[i][3] << "]\n";
+	}
+
+	for (GLuint i = 0; i < node->mNumMeshes; i++) {
+		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
+		std::cout << '\t' << aimesh->mName.C_Str() << '\n';
+
+		// Get mesh
+		Mesh mesh = this->processMesh(aimesh, scene);
+		mesh.setTransform(transform);
+		meshTable[mesh.getName()] = mesh;
+		this->meshes.push_back(mesh);
+
+		std::cout << "\t" << mesh.getName() << '\n';
+	}
+
+	// Recursion to process all child nodes.
+	for (GLuint i = 0; i < node->mNumChildren; i++) {
+		this->processNodeFBX(node->mChildren[i], scene, transform);
+	}
+}
+
 void Model::processNode(aiNode* node, const aiScene* scene) {
 	// Add all node in meshes.
 	for (GLuint i = 0; i < node->mNumMeshes; i++) {
 		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
-		//std::cout << aimesh->mName.C_Str() << '\n';
 		
 		// Get mesh
 		Mesh mesh = this->processMesh(aimesh, scene);
