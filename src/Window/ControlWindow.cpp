@@ -406,7 +406,7 @@ namespace CG
 						AnimationClip clip;
 						clip.tracks = tracks;
 						clip.name = name;
-						clip.duration = duration;
+						clip.duration = duration / speed;
 						clip.speed = speed;
 						clip.isLoop = isLoop;
 						targetScene->addAnimation(modelsName[modelsIdx], clip);

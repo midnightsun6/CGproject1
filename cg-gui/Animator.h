@@ -99,18 +99,22 @@ private:
 	std::unordered_map<std::string, AnimationClip> animations;
 
 public:
+	/* Constructor and Destructor */
 	Animator();
 	~Animator();
 
+	/* Functions */
 	void update(float dt);
 	void play(const char* animationName);
 	void clear();
 
+	/* Animations */
 	void addAnimation(AnimationClip animation);
 	void deleteAnimation(const char* animation);
 	void importAnimation(const char* filename);
-	void exportAnimation(const char* filename, const char* animation);
+	void exportAnimation(const char* filename, const char* animation) const;
 
+	/* Getter */
 	const bool isOnPlaying() const;
 	const std::unordered_map<std::string, AnimationClip>& getAnimations() const;
 	const glm::mat4& getAnimationMatrix(std::string part);

@@ -24,6 +24,10 @@ private:
 	float fovy = 45.f;
 	float scaleSpeed = 0.1f;
 
+	// Camera view
+	float near = 0.1f;
+	float far = 1000.f;
+
 	// Camera parameters
 	glm::vec3 cameraPos;
 	glm::vec3 cameraFront;

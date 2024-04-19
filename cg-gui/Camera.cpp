@@ -6,7 +6,7 @@ Camera::Camera() {
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection = glm::perspective(fovy, (float)width / height, 0.1f, 100.f);
+	projection = glm::perspective(fovy, (float)width / height, near, far);
 }
 
 Camera::~Camera() {}
@@ -100,7 +100,7 @@ void Camera::update() {
     // Update camera matrix
 	float apect = (height == 0 ? 1 : (float)width / height);
     view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection = glm::perspective(fovy, apect, 0.1f, 100.f);
+	projection = glm::perspective(fovy, apect, near, far);
 }
 
 const glm::vec3& Camera::getCameraPos() const {

@@ -28,6 +28,7 @@ bool MainScene::Initialize() {
     // Load shaders
     baseObjShader.setShader("shader.vs", "shader.fs");
     modelShader.setShader("model_loading.vs", "model_loading.fs");
+    cubemapShader.setShader("cubemap.vs.glsl", "cubemap.fs.glsl");
 
     return true;
 }
@@ -46,14 +47,13 @@ void MainScene::Update(double dt) {
     box.setModel(glm::mat4(1.0f));
     box.Rotate(totalTime * angle, 0, 1, 0);
     box.Translate(totalTime * speed, 0, 0);
-
-    modelShader.setMat4("model", glm::mat4(1.f));
 }
 
 void MainScene::Render() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // BaseObjects
     baseObjShader.use();
     box.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
@@ -61,10 +61,11 @@ void MainScene::Render() {
         obj.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     }
 
+    // Models
     modelShader.use();
     modelShader.setMat4("projection", camera.getProjectionMatrix());
     modelShader.setMat4("view", camera.getViewMatrix());
-    
+
     // Light
     glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
     glm::vec3 lightColor = glm::vec3(1.0f);
@@ -75,6 +76,12 @@ void MainScene::Render() {
     for (auto& [_, m] : models) {
         m.draw(modelShader);
     }
+
+    // Skybox
+    cubemapShader.use();
+    cubemapShader.setMat4("projection", camera.getProjectionMatrix());
+    cubemapShader.setMat4("view", camera.getViewMatrix());
+    skybox.draw(cubemapShader);
 }
 
 void MainScene::OnResize(int width, int height) {

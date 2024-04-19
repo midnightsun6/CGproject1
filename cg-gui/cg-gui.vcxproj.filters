@@ -56,6 +56,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -142,6 +145,9 @@
     <ClInclude Include="Animator.h">
       <Filter>Animation</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\build\Debugx64\res\shaders\lamp.fs">
@@ -160,6 +166,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="..\build\Debugx64\res\shaders\shader.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\res\shaders\cubemap.fs.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="..\res\res\shaders\cubemap.vs.glsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

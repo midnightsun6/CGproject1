@@ -159,6 +159,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\imgui\backends\imgui_impl_glfw.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\build\Debugx64\res\shaders\lamp.fs" />
@@ -187,6 +189,8 @@
     <None Include="..\build\Debugx64\res\shaders\model_loading.vs" />
     <None Include="..\build\Debugx64\res\shaders\shader.fs" />
     <None Include="..\build\Debugx64\res\shaders\shader.vs" />
+    <None Include="..\res\res\shaders\cubemap.fs.glsl" />
+    <None Include="..\res\res\shaders\cubemap.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

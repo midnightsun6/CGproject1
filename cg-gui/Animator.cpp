@@ -73,7 +73,7 @@ void Animator::importAnimation(const char* filename) {
 	std::cout << "Added animation successfully: " << filename << '\n';
 }
 
-void Animator::exportAnimation(const char* filename, const char* animation) {
+void Animator::exportAnimation(const char* filename, const char* animation) const {
 	std::string filenameStr = filename;
 	std::string path = "./res/animations/" + filenameStr + ".objani";
 

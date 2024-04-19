@@ -3,6 +3,7 @@
 #include "../../cg-gui/Model.h"
 #include "../../cg-gui/Camera.h"
 #include "../../cg-gui/GLBaseObject.h"
+#include "../../cg-gui/Skybox.h"
 
 class MainScene {
 private:
@@ -10,13 +11,18 @@ private:
 
 	Camera camera;
 
+	/* Background */
+	Skybox skybox;
+
 	/* Base Objects (temp) */
 	GLBaseObject grid, box;
 	std::vector<GLBaseObject> spheres;
 
 	/* Object */
 	std::unordered_map<std::string, Model> models;
-	Shader modelShader, baseObjShader;
+
+	/* Shaders */
+	Shader modelShader, baseObjShader, cubemapShader;
 
 public:
 	MainScene();
