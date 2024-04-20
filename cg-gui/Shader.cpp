@@ -44,6 +44,7 @@ GLuint Shader::LoadShaders(ShaderInfo* shaders) {
 		if (!success) {
 			GLchar infoLog[1024];
 			glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+			std::cout << shaders->filename << '\n';
 			std::cout << "Error compiling shader type " << entry->type << ": " << infoLog;
 		}
 

@@ -4,6 +4,7 @@
 #include "../../cg-gui/Camera.h"
 #include "../../cg-gui/GLBaseObject.h"
 #include "../../cg-gui/Skybox.h"
+#include "../../cg-gui/Terrian.h"
 
 class MainScene {
 private:
@@ -13,6 +14,7 @@ private:
 
 	/* Background */
 	Skybox skybox;
+	Terrian terrian;
 
 	/* Base Objects (temp) */
 	GLBaseObject grid, box;
@@ -22,7 +24,7 @@ private:
 	std::unordered_map<std::string, Model> models;
 
 	/* Shaders */
-	Shader modelShader, baseObjShader, cubemapShader;
+	Shader modelShader, baseObjShader, cubemapShader, terrianShader;
 
 public:
 	MainScene();

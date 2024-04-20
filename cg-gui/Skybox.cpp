@@ -25,7 +25,7 @@ void Skybox::loadTexture() {
 
 Skybox::Skybox() {
     // Set points position.
-    float size = 250.f;
+    float size = 200.f;
     vertices.push_back(glm::vec3(-size, -size, -size));   // 0
     vertices.push_back(glm::vec3(-size, -size, size));    // 1
     vertices.push_back(glm::vec3(-size, size, -size));    // 2

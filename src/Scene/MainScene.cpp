@@ -29,6 +29,7 @@ bool MainScene::Initialize() {
     baseObjShader.setShader("shader.vs", "shader.fs");
     modelShader.setShader("model_loading.vs", "model_loading.fs");
     cubemapShader.setShader("cubemap.vs.glsl", "cubemap.fs.glsl");
+    terrianShader.setShader("terrian.vs.glsl", "terrian.fs.glsl");
 
     return true;
 }
@@ -56,7 +57,7 @@ void MainScene::Render() {
     // BaseObjects
     baseObjShader.use();
     box.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
-    grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
+    //grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     for (auto& obj : spheres) {
         obj.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     }
@@ -76,6 +77,11 @@ void MainScene::Render() {
     for (auto& [_, m] : models) {
         m.draw(modelShader);
     }
+
+    terrianShader.use();
+    terrianShader.setMat4("projection", camera.getProjectionMatrix());
+    terrianShader.setMat4("view", camera.getViewMatrix());
+    terrian.draw(terrianShader);
 
     // Skybox
     cubemapShader.use();
