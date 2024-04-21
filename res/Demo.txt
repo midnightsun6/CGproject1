@@ -1,0 +1,7 @@
+Android Robot/AndroidBot.obj
+
+Walk.objani
+Squat.objani
+Jackjump.objani
+Kamehameha.objani
+Buu.objani
