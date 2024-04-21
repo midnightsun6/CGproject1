@@ -14,9 +14,9 @@ void Animator::update(float dt) {
 		AnimationClip& clip = animations[currAnimation];
 
 		currTime += dt;
-		if (currTime > clip.duration) {
+		if (currTime > clip.duration / clip.speed) {
 			isPlaying = clip.isLoop;
-			currTime = fmod(currTime, clip.duration);
+			currTime = fmod(currTime, clip.duration / clip.speed);
 		}
 	}
 }
