@@ -5,6 +5,7 @@
 #include "../../cg-gui/GLBaseObject.h"
 #include "../../cg-gui/Skybox.h"
 #include "../../cg-gui/Terrian.h"
+#include "../../cg-gui/Grass.h"
 
 class MainScene {
 private:
@@ -15,6 +16,7 @@ private:
 	/* Background */
 	Skybox skybox;
 	Terrian terrian;
+	Grass grass;
 
 	/* Base Objects (temp) */
 	GLBaseObject grid, box;
@@ -24,7 +26,7 @@ private:
 	std::unordered_map<std::string, Model> models;
 
 	/* Shaders */
-	Shader modelShader, baseObjShader, cubemapShader, terrianShader;
+	Shader modelShader, baseObjShader, cubemapShader, terrianShader, grassShader;
 
 public:
 	MainScene();

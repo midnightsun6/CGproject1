@@ -30,6 +30,7 @@ bool MainScene::Initialize() {
     modelShader.setShader("model_loading.vs", "model_loading.fs");
     cubemapShader.setShader("cubemap.vs.glsl", "cubemap.fs.glsl");
     terrianShader.setShader("terrian.vs.glsl", "terrian.fs.glsl");
+    grassShader.setShader("grass.vs.glsl", "grass.fs.glsl");
 
     return true;
 }
@@ -88,6 +89,12 @@ void MainScene::Render() {
     cubemapShader.setMat4("projection", camera.getProjectionMatrix());
     cubemapShader.setMat4("view", camera.getViewMatrix());
     skybox.draw(cubemapShader);
+
+    //grass
+    grassShader.use();
+    grassShader.setMat4("projection", camera.getProjectionMatrix());
+    grassShader.setMat4("view", camera.getViewMatrix());
+    grass.draw(grassShader);
 }
 
 void MainScene::OnResize(int width, int height) {

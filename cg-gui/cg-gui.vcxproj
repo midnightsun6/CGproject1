@@ -154,6 +154,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="GLBaseObject.cpp" />
+    <ClCompile Include="Grass.cpp" />
     <ClCompile Include="InputController.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="ControllerManager.h" />
     <ClInclude Include="Definition.h" />
     <ClInclude Include="GLBaseObject.h" />
+    <ClInclude Include="Grass.h" />
     <ClInclude Include="InputController.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
@@ -195,6 +197,8 @@
     <None Include="..\res\res\shaders\cubemap.vs.glsl" />
     <None Include="..\res\res\shaders\terrian.fs.glsl" />
     <None Include="..\res\res\shaders\terrian.vs.glsl" />
+    <None Include="grass.fs.glsl" />
+    <None Include="grass.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

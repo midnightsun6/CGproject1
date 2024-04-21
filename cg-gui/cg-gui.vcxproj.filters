@@ -62,6 +62,9 @@
     <ClCompile Include="Terrian.cpp">
       <Filter>Object</Filter>
     </ClCompile>
+    <ClCompile Include="Grass.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -154,6 +157,9 @@
     <ClInclude Include="Terrian.h">
       <Filter>Object</Filter>
     </ClInclude>
+    <ClInclude Include="Grass.h">
+      <Filter>Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\build\Debugx64\res\shaders\lamp.fs">
@@ -184,6 +190,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="..\res\res\shaders\terrian.vs.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="grass.vs.glsl">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="grass.fs.glsl">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>
