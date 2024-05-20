@@ -49,7 +49,7 @@ void ParticleSystem::draw(const Shader& shader) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LEQUAL);
 
-    shader.setMat4("model", glm::mat4(1.f));
+    shader.setUniform("model", glm::mat4(1.f));
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);

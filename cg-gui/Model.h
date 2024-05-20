@@ -47,7 +47,7 @@ public:
 
 	/* Function */
 	void update(float dt);
-	void draw(Shader& shader);
+	void draw(const Shader& shader);
 
 	/* Getter */
 	const std::vector<Mesh>& getMeshes() const;

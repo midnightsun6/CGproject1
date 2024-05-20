@@ -115,12 +115,12 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 		child.draw(shader, animator, model, offsets, amount);
 	}
 
-	shader.setMat4("model", model);
-	shader.setVec3("material.diffuse", material.diffuse);
-	shader.setVec3("material.specular", material.specular);
-	shader.setVec3("material.ambient", material.ambient);
-	shader.setFloat("material.shininess", material.shininess);
-	shader.setInt("hasTexture", textures.empty() ? 0 : 1);
+	shader.setUniform("model", model);
+	shader.setUniform("material.diffuse", material.diffuse);
+	shader.setUniform("material.specular", material.specular);
+	shader.setUniform("material.ambient", material.ambient);
+	shader.setUniform("material.shininess", material.shininess);
+	shader.setUniform("hasTexture", textures.empty() ? 0 : 1);
 
 	GLuint diffuseNr = 1;
 	GLuint specularNr = 1;
@@ -145,7 +145,7 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 			number = std::to_string(heightNr++);
 		}
 
-		shader.setUint(name + number, i);
+		shader.setUniform(name + number, i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	glActiveTexture(GL_TEXTURE0);

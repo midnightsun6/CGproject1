@@ -118,7 +118,7 @@ void Grass::draw(const Shader& shader)
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    shader.setMat4("model", glm::mat4(1.0f));
+    shader.setUniform("model", glm::mat4(1.0f));
    
     glBindVertexArray(VAO);
 

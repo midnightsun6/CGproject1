@@ -1,6 +1,24 @@
 #pragma once
 #include "Definition.h"
 
+enum MouseHeld {
+	LEFT,
+	RIGHT,
+	MIDDLE,
+	NO_HELD,
+};
+
+enum CameraMovement {
+	FORWARD,
+	BACKWARD,
+	LEFTSIDE,
+	RIGHTSIDE,
+	VERTICAL,
+	ROTATION,
+	SPEED_UP,
+	NO_MOVE
+};
+
 class InputController {
 private:
 	static InputController input;	// A singleton InputController.

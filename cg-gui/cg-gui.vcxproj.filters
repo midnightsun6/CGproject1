@@ -38,9 +38,6 @@
     <ClCompile Include="InputController.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
-    <ClCompile Include="ControllerManager.cpp">
-      <Filter>Controller</Filter>
-    </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
@@ -67,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Shader\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +127,9 @@
     <Filter Include="Shader\Loader">
       <UniqueIdentifier>{71567cde-c514-4b3a-a7c3-2c889b8a46ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Manager">
+      <UniqueIdentifier>{5d6b4d03-b9da-4530-84fa-54c74721e79a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -162,9 +165,6 @@
     <ClInclude Include="InputController.h">
       <Filter>Controller</Filter>
     </ClInclude>
-    <ClInclude Include="ControllerManager.h">
-      <Filter>Controller</Filter>
-    </ClInclude>
     <ClInclude Include="Definition.h" />
     <ClInclude Include="Animator.h">
       <Filter>Animation</Filter>
@@ -192,6 +192,9 @@
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Shader\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

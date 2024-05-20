@@ -30,27 +30,3 @@
 #include <stb\stb_image.h>
 
 #define MAX_BONE_INFLUENCE 4
-
-enum MouseHeld {
-	LEFT,
-	RIGHT,
-	MIDDLE,
-	NO_HELD,
-};
-
-enum CameraMovement {
-	FORWARD,
-	BACKWARD,
-	LEFTSIDE,
-	RIGHTSIDE,
-	VERTICAL,
-	ROTATION,
-	SPEED_UP,
-	NO_MOVE
-};
-
-typedef struct {
-	GLenum type;
-	const char* filename;
-	GLuint shader;
-} ShaderInfo;

@@ -332,7 +332,7 @@ void Model::setModel(const char* filename) {
 	this->loadModel(filename);
 }
 
-void Model::draw(Shader& shader) {
+void Model::draw(const Shader& shader) {
 	for (auto& mesh : meshes) {
 		mesh.draw(shader, animator, modelMatrix, offsets, amount);
 	}

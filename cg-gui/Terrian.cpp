@@ -80,7 +80,7 @@ Terrian::Terrian() {
 }
 
 void Terrian::draw(const Shader& shader) {
-    shader.setMat4("model", glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1, 0, 0)));
+    shader.setUniform("model", glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1, 0, 0)));
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);

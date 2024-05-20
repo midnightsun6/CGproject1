@@ -2,7 +2,7 @@
 
 GLBaseObject::GLBaseObject() {}
 
-void GLBaseObject::Init(GLenum type) {
+void GLBaseObject::init(GLenum type) {
 	this->type = type;
 	model = glm::mat4(1.f);
 
@@ -38,24 +38,22 @@ void GLBaseObject::setModel(glm::mat4 model) {
 	this->model = model;
 }
 
-void GLBaseObject::Translate(float x, float y, float z) {
+void GLBaseObject::translate(float x, float y, float z) {
 	model = glm::translate(glm::mat4(1.f), glm::vec3(x, y, z)) * model;
 }
 
-void GLBaseObject::Rotate(float angle, float x, float y, float z) {
+void GLBaseObject::rotate(float angle, float x, float y, float z) {
 	model = glm::rotate(glm::mat4(1.f), glm::radians(angle), glm::vec3(x, y, z)) * model;
 }
 
-void GLBaseObject::Scale(float x, float y, float z) {
+void GLBaseObject::scale(float x, float y, float z) {
 	model = glm::scale(glm::mat4(1.f), glm::vec3(x, y, z)) * model;
 }
 
-void GLBaseObject::Draw(glm::mat4 projection, glm::mat4 view, Shader& shader) {
+void GLBaseObject::draw(const Shader& shader) {
 	glBindVertexArray(VAO);
 
-	shader.setMat4("projectionMatrix", projection);
-	shader.setMat4("viewMatrix", view);
-	shader.setMat4("modelMatrix", model);
+	shader.setUniform("model", model);
 
 	glBindBuffer(GL_ARRAY_BUFFER, pVBOs);
 	glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), &points[0], GL_DYNAMIC_DRAW);

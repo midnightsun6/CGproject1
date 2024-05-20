@@ -62,6 +62,10 @@ Shader::Shader(const char* vert, const char* frag) {
 	this->setShader(vert, frag);
 }
 
+Shader::Shader(const char* vert, const char* geo, const char* frag) {
+	this->setShader(vert, geo, frag);
+}
+
 void Shader::setShader(const char* vert, const char* frag) {
 	ShaderInfo shaders[] = {
 		{ GL_VERTEX_SHADER, vert },
@@ -81,31 +85,8 @@ void Shader::setShader(const char* vert, const char* geo, const char* frag) {
 	program = LoadShaders(shaders);
 }
 
-void Shader::use() {
+void Shader::use() const {
 	glUseProgram(program);
-}
-
-void Shader::setBool(const std::string& name, const bool& value) const {
-	glUniform1i(glGetUniformLocation(this->program, name.c_str()), (int)value);
-}
-
-void Shader::setInt(const std::string& name, const int& value) const {
-	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
-}
-void Shader::setUint(const std::string& name, const unsigned int& value) const {
-	glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
-}
-
-void Shader::setFloat(const std::string& name, const float& value) const {
-	glUniform1f(glGetUniformLocation(this->program, name.c_str()), value);
-}
-
-void Shader::setMat4(const std::string& name, const glm::mat4& value) const {
-	glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
-}
-
-void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
-	glUniform3fv(glGetUniformLocation(this->program, name.c_str()), 1, glm::value_ptr(value));
 }
 
 const GLuint& Shader::getProgram() const {

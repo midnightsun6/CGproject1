@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ControllerManager.h"
+#include "InputController.h"
 
 class Camera {
 private:
-	InputController* input = ControllerManager::getInputController();
+	InputController* input = InputController::getInstance();
 
 	// Window parameters
 	int width = 1280, height = 720;

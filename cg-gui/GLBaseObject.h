@@ -20,17 +20,17 @@ protected:
 public:
 	GLBaseObject();
 
-	virtual void Init(GLenum type);
+	virtual void init(GLenum type);
 
 	void addPoint(glm::vec3 point);
 	void addColor(glm::vec3 color);
 	void addIndex(unsigned int index);
 
 	void setModel(glm::mat4 model);
-	void Translate(float x, float y, float z);
-	void Rotate(float angle, float x, float y, float z);
-	void Scale(float x, float y, float z);
+	void translate(float x, float y, float z);
+	void rotate(float angle, float x, float y, float z);
+	void scale(float x, float y, float z);
 
-	virtual void Draw(glm::mat4 projection, glm::mat4 view, Shader& shader);
+	virtual void draw(const Shader& shader);
 };
 

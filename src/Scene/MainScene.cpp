@@ -17,26 +17,17 @@ bool MainScene::Initialize() {
     glEnable(GL_DEPTH_TEST);
 
     // Init objects.
-    grid.Init(GL_LINES);
+    grid.init(GL_LINES);
     setGrid();
 
-    box.Init(GL_TRIANGLES);
+    box.init(GL_TRIANGLES);
     setBox(1);
+
+    shaderManager->init();
 
     // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
 
     //particle = ParticleSystem(10.f, 50000);
-
-    // Load shaders
-    baseObjShader.setShader("shader.vs.glsl", "shader.fs.glsl");
-    modelShader.setShader("model_loading.vs.glsl", "model_loading.fs.glsl");
-    //modelShader.setShader("model_loading.vs.glsl", "model_loading_toon.fs.glsl");
-    //modelShader.setShader("model_loading_mosaic.vs.glsl", "model_loading_mosaic.fs.glsl");
-    cubemapShader.setShader("cubemap.vs.glsl", "cubemap.fs.glsl");
-    terrianShader.setShader("terrian.vs.glsl", "terrian.fs.glsl");
-    grassShader.setShader("grass.vs.glsl", "grass.fs.glsl");
-    particleShader.setShader("particle.vs.glsl", "particle.gs.glsl", "particle.fs.glsl");
-    //particleShader.setShader("particle.vs.glsl", "particle.fs.glsl");
 
     return true;
 }
@@ -53,8 +44,8 @@ void MainScene::Update(double dt) {
 
     float angle = 90, speed = 5;
     box.setModel(glm::mat4(1.0f));
-    box.Rotate(totalTime * angle, 0, 1, 0);
-    box.Translate(totalTime * speed, 0, 0);
+    box.rotate(totalTime * angle, 0, 1, 0);
+    box.translate(totalTime * speed, 0, 0);
 
     particle.update(dt);
 }
@@ -64,52 +55,56 @@ void MainScene::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // BaseObjects
-    baseObjShader.use();
-    box.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
+    shaderManager->useShader(SHADER_BASE_SHAPE);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    box.draw(shaderManager->getCurrShader());
     //grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
     for (auto& obj : spheres) {
-        obj.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
+        obj.draw(shaderManager->getCurrShader());
     }
 
     // Models
-    modelShader.use();
-    modelShader.setInt("screenWidth", screenWidth);
-    modelShader.setInt("screenHeight", screenHeight);
-    modelShader.setMat4("projection", camera.getProjectionMatrix());
-    modelShader.setMat4("view", camera.getViewMatrix());
+    shaderManager->useShader(SHADER_MODEL);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    shaderManager->setCurrUniform("screenWidth", screenWidth);
+    shaderManager->setCurrUniform("screenHeight", screenHeight);
 
-    // Light
+    // Model's light
     glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
     glm::vec3 lightColor = glm::vec3(1.0f);
-    modelShader.setVec3("viewPos", camera.getCameraPos());
-    modelShader.setVec3("lightPos", camera.getCameraPos());
-    modelShader.setVec3("lightColor", lightColor);
+    shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
+    shaderManager->setCurrUniform("lightPos", camera.getCameraPos());
+    shaderManager->setCurrUniform("lightColor", lightColor);
 
     for (auto& [_, m] : models) {
-        m.draw(modelShader);
+        m.draw(shaderManager->getCurrShader());
     }
 
-    terrianShader.use();
-    terrianShader.setMat4("projection", camera.getProjectionMatrix());
-    terrianShader.setMat4("view", camera.getViewMatrix());
-    terrian.draw(terrianShader);
+    // Terrian
+    shaderManager->useShader(SHADER_TERRIAN);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    terrian.draw(shaderManager->getCurrShader());
 
     // Skybox
-    cubemapShader.use();
-    cubemapShader.setMat4("projection", camera.getProjectionMatrix());
-    cubemapShader.setMat4("view", camera.getViewMatrix());
-    skybox.draw(cubemapShader);
+    shaderManager->useShader(SHADER_CUBEMAP);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    skybox.draw(shaderManager->getCurrShader());
 
-    //grass
-    grassShader.use();
-    grassShader.setMat4("projection", camera.getProjectionMatrix());
-    grassShader.setMat4("view", camera.getViewMatrix());
-    grass.draw(grassShader);
+    // Grass
+    shaderManager->useShader(SHADER_GRASS);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    grass.draw(shaderManager->getCurrShader());
 
-    particleShader.use();
-    particleShader.setMat4("projection", camera.getProjectionMatrix());
-    particleShader.setMat4("view", camera.getViewMatrix());
-    particle.draw(particleShader);
+    // Fountain particle
+    shaderManager->useShader(SHADER_PARTICLE_FOUNTAIN);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    particle.draw(shaderManager->getCurrShader());
 }
 
 void MainScene::OnResize(int width, int height) {
@@ -240,7 +235,7 @@ void MainScene::setGrid() {
 
 void MainScene::addSphere(float radius, int slices, int stacks, glm::vec3 color) {
     GLBaseObject sphere;
-    sphere.Init(GL_TRIANGLE_STRIP);
+    sphere.init(GL_TRIANGLE_STRIP);
 
     for (int i = 0; i <= stacks; i++) {
         float phi = i / (float)stacks * glm::pi<float>();

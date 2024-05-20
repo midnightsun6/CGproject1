@@ -153,7 +153,6 @@
     <ClCompile Include="..\src\Window\ControlWindow.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="ControllerManager.cpp" />
     <ClCompile Include="GLBaseObject.cpp" />
     <ClCompile Include="Grass.cpp" />
     <ClCompile Include="InputController.cpp" />
@@ -162,6 +161,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Terrian.cpp" />
   </ItemGroup>
@@ -177,7 +177,6 @@
     <ClInclude Include="..\src\Window\ControlWindow.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="ControllerManager.h" />
     <ClInclude Include="Definition.h" />
     <ClInclude Include="GLBaseObject.h" />
     <ClInclude Include="Grass.h" />
@@ -186,6 +185,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrian.h" />
   </ItemGroup>

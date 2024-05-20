@@ -84,7 +84,7 @@ Skybox::Skybox() {
 void Skybox::draw(const Shader& shader) {
     glDepthMask(GL_FALSE);
 
-    shader.setInt("skybox", 0);
+    shader.setUniform("skybox", 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);

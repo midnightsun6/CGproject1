@@ -7,6 +7,7 @@
 #include "../../cg-gui/Terrian.h"
 #include "../../cg-gui/Grass.h"
 #include "../../cg-gui/ParticleSystem.h"
+#include "../../cg-gui/ShaderManager.h"
 
 class MainScene {
 private:
@@ -33,7 +34,7 @@ private:
 	ParticleSystem particle;
 
 	/* Shaders */
-	Shader modelShader, baseObjShader, cubemapShader, terrianShader, grassShader, particleShader;
+	ShaderManager* shaderManager = ShaderManager::getInstance();
 
 public:
 	MainScene();
@@ -43,7 +44,7 @@ public:
 		GLFWkey function cannot use the reference lambda function => cannot access InputController in App.h.
 		Temporary sol: Set InputController as public.
 	*/
-	InputController* input = ControllerManager::getInputController();
+	InputController* input = InputController::getInstance();
 
 	/* Scene functions */
 	bool Initialize();
