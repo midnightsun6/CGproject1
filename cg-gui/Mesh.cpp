@@ -17,6 +17,8 @@ void Mesh::setupMesh() {
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
+	glGenBuffers(1, &insVBO);
+
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
@@ -104,13 +106,13 @@ void Mesh::addChild(Mesh mesh) {
 	children.push_back(mesh);
 }
 
-void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel) {
+void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount) {
 	glm::mat4 animation = animator.getAnimationMatrix(this->name);
 	glm::mat4 model = parentModel * transform * animation * invTransform;
 	//glm::mat4 model = parentModel * transform * animation;
 	// Draw the children meshes.
 	for (auto& child : children) {
-		child.draw(shader, animator, model);
+		child.draw(shader, animator, model, offsets, amount);
 	}
 
 	shader.setMat4("model", model);
@@ -150,7 +152,15 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 
 	// Draw a mesh.
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
+	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec2), &offsets[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glVertexAttribDivisor(3, 1);
+	glEnableVertexAttribArray(3);
+
+	glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, std::min(amount, (int)offsets.size()));
+	//glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 

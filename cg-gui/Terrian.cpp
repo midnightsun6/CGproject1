@@ -1,5 +1,4 @@
 #include "Terrian.h"
-#include "stb_image.h"
 
 void Terrian::loadTexture() {
 	int width, height, nrComponents;

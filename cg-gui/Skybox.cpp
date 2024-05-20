@@ -1,5 +1,4 @@
 #include "Skybox.h"
-#include "stb_image.h"
 
 void Skybox::loadTexture() {
     std::string path = "./res/background/";

@@ -160,6 +160,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Terrian.cpp" />
@@ -183,21 +184,26 @@
     <ClInclude Include="InputController.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrian.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\build\Debugx64\res\shaders\lamp.fs" />
-    <None Include="..\build\Debugx64\res\shaders\lamp.vs" />
-    <None Include="..\build\Debugx64\res\shaders\model_loading.fs" />
-    <None Include="..\build\Debugx64\res\shaders\model_loading.vs" />
-    <None Include="..\build\Debugx64\res\shaders\shader.fs" />
-    <None Include="..\build\Debugx64\res\shaders\shader.vs" />
     <None Include="..\res\res\shaders\cubemap.fs.glsl" />
     <None Include="..\res\res\shaders\cubemap.vs.glsl" />
     <None Include="..\res\res\shaders\grass.fs.glsl" />
     <None Include="..\res\res\shaders\grass.vs.glsl" />
+    <None Include="..\res\res\shaders\model_loading.fs.glsl" />
+    <None Include="..\res\res\shaders\model_loading.vs.glsl" />
+    <None Include="..\res\res\shaders\model_loading_mosaic.fs.glsl" />
+    <None Include="..\res\res\shaders\model_loading_mosaic.vs.glsl" />
+    <None Include="..\res\res\shaders\model_loading_toon.fs.glsl" />
+    <None Include="..\res\res\shaders\particle.fs.glsl" />
+    <None Include="..\res\res\shaders\particle.gs.glsl" />
+    <None Include="..\res\res\shaders\particle.vs.glsl" />
+    <None Include="..\res\res\shaders\shader.fs.glsl" />
+    <None Include="..\res\res\shaders\shader.vs.glsl" />
     <None Include="..\res\res\shaders\terrian.fs.glsl" />
     <None Include="..\res\res\shaders\terrian.vs.glsl" />
   </ItemGroup>

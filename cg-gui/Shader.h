@@ -12,6 +12,7 @@ public:
 	Shader();
 	Shader(const char* vert, const char* frag);
 	void setShader(const char* vert, const char* frag);
+	void setShader(const char* vert, const char* geo, const char* frag);
 
 	void use();
 	void setBool(const std::string& name, const bool& value) const;

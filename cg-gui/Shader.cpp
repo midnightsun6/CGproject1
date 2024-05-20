@@ -71,6 +71,16 @@ void Shader::setShader(const char* vert, const char* frag) {
 	program = LoadShaders(shaders);
 }
 
+void Shader::setShader(const char* vert, const char* geo, const char* frag) {
+	ShaderInfo shaders[] = {
+		{ GL_VERTEX_SHADER, vert },
+		{ GL_GEOMETRY_SHADER, geo },
+		{ GL_FRAGMENT_SHADER, frag },
+		{ GL_NONE, NULL }
+	};
+	program = LoadShaders(shaders);
+}
+
 void Shader::use() {
 	glUseProgram(program);
 }

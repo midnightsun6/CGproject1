@@ -35,7 +35,7 @@ private:
 	std::vector<Texture> textures;
 	std::vector<Mesh> children;
 
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, VBO, EBO, insVBO;
 	glm::mat4 transform, invTransform;
 
 	unsigned int getWhiteTexture();
@@ -49,7 +49,7 @@ public:
 
 	void setCenter(glm::vec3 center);
 	void addChild(Mesh mesh);
-	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel);
+	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount);
 
 	void setName(const std::string& name);
 	void setTransform(const glm::mat4 transform);

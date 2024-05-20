@@ -13,9 +13,13 @@ private:
 	glm::mat4 transform, invTransform;
 	glm::mat4 modelMatrix;
 
+	std::vector<glm::vec2> offsets;
+	int amount = 10;
+
 	std::unordered_map<std::string, Mesh> meshTable; // <name, index> to create child-parent meshes.
 
 	void loadModel(std::string filename);
+	void computeInstanceOffsets();
 	void processNodeFBX(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform);
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);

@@ -6,10 +6,14 @@
 #include "../../cg-gui/Skybox.h"
 #include "../../cg-gui/Terrian.h"
 #include "../../cg-gui/Grass.h"
+#include "../../cg-gui/ParticleSystem.h"
 
 class MainScene {
 private:
 	float totalTime;
+
+	int screenWidth = 1280;
+	int screenHeight = 760;
 
 	Camera camera;
 
@@ -25,8 +29,11 @@ private:
 	/* Object */
 	std::unordered_map<std::string, Model> models;
 
+	/* Particle */
+	ParticleSystem particle;
+
 	/* Shaders */
-	Shader modelShader, baseObjShader, cubemapShader, terrianShader, grassShader;
+	Shader modelShader, baseObjShader, cubemapShader, terrianShader, grassShader, particleShader;
 
 public:
 	MainScene();

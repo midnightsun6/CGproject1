@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <fstream>
 #include <array>
@@ -13,6 +12,7 @@
 #include <unordered_map>
 #include <set>
 #include <cstring>
+#include <queue>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -27,6 +27,7 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <stb\stb_image.h>
 
 #define MAX_BONE_INFLUENCE 4
 

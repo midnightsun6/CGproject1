@@ -35,35 +35,38 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="GLBaseObject.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
     <ClCompile Include="InputController.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
     <ClCompile Include="ControllerManager.cpp">
       <Filter>Controller</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Terrian.cpp">
-      <Filter>Object</Filter>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Particle</Filter>
     </ClCompile>
     <ClCompile Include="Grass.cpp">
-      <Filter>Object</Filter>
+      <Filter>Object\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Object\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrian.cpp">
+      <Filter>Object\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Object\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GLBaseObject.cpp">
+      <Filter>Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shader\Loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +100,33 @@
     <Filter Include="Animation">
       <UniqueIdentifier>{77e9bbde-0c2a-4a65-abc6-33326a3dff92}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Particle">
+      <UniqueIdentifier>{5eaeb59d-8e97-4135-b2ea-934b3fa691c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{6e2dd3e0-f5d5-4a88-973c-1e15b8b45aed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Model">
+      <UniqueIdentifier>{1efd8d4d-8eb9-40ed-a4eb-efe396699996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Background">
+      <UniqueIdentifier>{7a7412c2-e28f-4fd4-ac23-6b99933dd1fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Background">
+      <UniqueIdentifier>{1a83e556-a2cd-4e61-a60c-d9aeb8174c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Model">
+      <UniqueIdentifier>{5843ebe6-3c41-4983-9026-60fc162ff192}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Shape">
+      <UniqueIdentifier>{09bdff54-f5b1-41f8-acbe-96b857f9926a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Shape">
+      <UniqueIdentifier>{6ad5c5bb-7c71-462d-903c-58059ff6a612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Loader">
+      <UniqueIdentifier>{71567cde-c514-4b3a-a7c3-2c889b8a46ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -129,9 +159,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="GLBaseObject.h">
-      <Filter>Object</Filter>
-    </ClInclude>
     <ClInclude Include="InputController.h">
       <Filter>Controller</Filter>
     </ClInclude>
@@ -139,64 +166,82 @@
       <Filter>Controller</Filter>
     </ClInclude>
     <ClInclude Include="Definition.h" />
-    <ClInclude Include="Shader.h">
-      <Filter>Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Object</Filter>
-    </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrian.h">
-      <Filter>Object</Filter>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Particle</Filter>
     </ClInclude>
     <ClInclude Include="Grass.h">
-      <Filter>Object</Filter>
+      <Filter>Object\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Object\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrian.h">
+      <Filter>Object\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Object\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GLBaseObject.h">
+      <Filter>Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Shader\Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\build\Debugx64\res\shaders\lamp.fs">
-      <Filter>Shader</Filter>
+    <None Include="..\res\res\shaders\particle.gs.glsl">
+      <Filter>Shader\Particle</Filter>
     </None>
-    <None Include="..\build\Debugx64\res\shaders\lamp.vs">
-      <Filter>Shader</Filter>
+    <None Include="..\res\res\shaders\particle.vs.glsl">
+      <Filter>Shader\Particle</Filter>
     </None>
-    <None Include="..\build\Debugx64\res\shaders\model_loading.fs">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="..\build\Debugx64\res\shaders\model_loading.vs">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="..\build\Debugx64\res\shaders\shader.fs">
-      <Filter>Shader</Filter>
-    </None>
-    <None Include="..\build\Debugx64\res\shaders\shader.vs">
-      <Filter>Shader</Filter>
+    <None Include="..\res\res\shaders\particle.fs.glsl">
+      <Filter>Shader\Particle</Filter>
     </None>
     <None Include="..\res\res\shaders\cubemap.fs.glsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Background</Filter>
     </None>
     <None Include="..\res\res\shaders\cubemap.vs.glsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\grass.fs.glsl">
+      <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\grass.vs.glsl">
+      <Filter>Shader\Background</Filter>
     </None>
     <None Include="..\res\res\shaders\terrian.fs.glsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Background</Filter>
     </None>
     <None Include="..\res\res\shaders\terrian.vs.glsl">
-      <Filter>Shader</Filter>
+      <Filter>Shader\Background</Filter>
     </None>
-    <None Include="grass.vs.glsl">
-      <Filter>Shader</Filter>
+    <None Include="..\res\res\shaders\model_loading.fs.glsl">
+      <Filter>Shader\Model</Filter>
     </None>
-    <None Include="grass.fs.glsl">
-      <Filter>Shader</Filter>
+    <None Include="..\res\res\shaders\model_loading.vs.glsl">
+      <Filter>Shader\Model</Filter>
+    </None>
+    <None Include="..\res\res\shaders\model_loading_mosaic.fs.glsl">
+      <Filter>Shader\Model</Filter>
+    </None>
+    <None Include="..\res\res\shaders\model_loading_mosaic.vs.glsl">
+      <Filter>Shader\Model</Filter>
+    </None>
+    <None Include="..\res\res\shaders\model_loading_toon.fs.glsl">
+      <Filter>Shader\Model</Filter>
+    </None>
+    <None Include="..\res\res\shaders\shader.vs.glsl">
+      <Filter>Shader\Shape</Filter>
+    </None>
+    <None Include="..\res\res\shaders\shader.fs.glsl">
+      <Filter>Shader\Shape</Filter>
     </None>
   </ItemGroup>
 </Project>

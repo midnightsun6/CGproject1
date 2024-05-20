@@ -1,5 +1,4 @@
 #include "Grass.h"
-#include "stb_image.h"
 
 Grass::Grass() {
     vertices = {
@@ -127,7 +126,6 @@ void Grass::draw(const Shader& shader)
     glBindTexture(GL_TEXTURE_2D, grassTextures[0]);
 
     //glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
-
     
     glDrawElementsInstanced(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0, grassNum);
 

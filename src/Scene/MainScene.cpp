@@ -25,12 +25,18 @@ bool MainScene::Initialize() {
 
     // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
 
+    //particle = ParticleSystem(10.f, 50000);
+
     // Load shaders
-    baseObjShader.setShader("shader.vs", "shader.fs");
-    modelShader.setShader("model_loading.vs", "model_loading.fs");
+    baseObjShader.setShader("shader.vs.glsl", "shader.fs.glsl");
+    modelShader.setShader("model_loading.vs.glsl", "model_loading.fs.glsl");
+    //modelShader.setShader("model_loading.vs.glsl", "model_loading_toon.fs.glsl");
+    //modelShader.setShader("model_loading_mosaic.vs.glsl", "model_loading_mosaic.fs.glsl");
     cubemapShader.setShader("cubemap.vs.glsl", "cubemap.fs.glsl");
     terrianShader.setShader("terrian.vs.glsl", "terrian.fs.glsl");
     grassShader.setShader("grass.vs.glsl", "grass.fs.glsl");
+    particleShader.setShader("particle.vs.glsl", "particle.gs.glsl", "particle.fs.glsl");
+    //particleShader.setShader("particle.vs.glsl", "particle.fs.glsl");
 
     return true;
 }
@@ -49,6 +55,8 @@ void MainScene::Update(double dt) {
     box.setModel(glm::mat4(1.0f));
     box.Rotate(totalTime * angle, 0, 1, 0);
     box.Translate(totalTime * speed, 0, 0);
+
+    particle.update(dt);
 }
 
 void MainScene::Render() {
@@ -65,6 +73,8 @@ void MainScene::Render() {
 
     // Models
     modelShader.use();
+    modelShader.setInt("screenWidth", screenWidth);
+    modelShader.setInt("screenHeight", screenHeight);
     modelShader.setMat4("projection", camera.getProjectionMatrix());
     modelShader.setMat4("view", camera.getViewMatrix());
 
@@ -95,9 +105,16 @@ void MainScene::Render() {
     grassShader.setMat4("projection", camera.getProjectionMatrix());
     grassShader.setMat4("view", camera.getViewMatrix());
     grass.draw(grassShader);
+
+    particleShader.use();
+    particleShader.setMat4("projection", camera.getProjectionMatrix());
+    particleShader.setMat4("view", camera.getViewMatrix());
+    particle.draw(particleShader);
 }
 
 void MainScene::OnResize(int width, int height) {
+    this->screenWidth = width;
+    this->screenHeight = height;
     camera.updateWindowSize(width, height);
     std::cout << "MainScene Resize: " << width << " " << height << std::endl;
 }

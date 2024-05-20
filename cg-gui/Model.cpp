@@ -1,11 +1,10 @@
 ﻿#include "Model.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
 
 void Model::loadModel(std::string filename) {
+	computeInstanceOffsets();
+
 	std::string path = "./res/models/" + filename;
 
 	Assimp::Importer import;
@@ -27,6 +26,19 @@ void Model::loadModel(std::string filename) {
 	this->transform = glm::translate(glm::mat4(1.f), center);
 	this->invTransform = glm::translate(glm::mat4(1.f), -center);
 	std::cout << "Loading model Successfully: " << filename << '\n';
+}
+
+void Model::computeInstanceOffsets() {
+	float offset = 1.0f;
+	int boundary = 2000;
+	for (int i = 0; i < boundary; i += 100) {
+		for (int j = 0; j < boundary; j += 100) {
+			glm::vec2 trans;
+			trans.x = (float)i / 10.f + offset;
+			trans.y = (float)j / 10.f + offset;
+			offsets.push_back(trans);
+		}
+	}
 }
 
 void Model::processNodeFBX(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform) {
@@ -322,7 +334,7 @@ void Model::setModel(const char* filename) {
 
 void Model::draw(Shader& shader) {
 	for (auto& mesh : meshes) {
-		mesh.draw(shader, animator, modelMatrix);
+		mesh.draw(shader, animator, modelMatrix, offsets, amount);
 	}
 }
 
