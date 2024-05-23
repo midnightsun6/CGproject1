@@ -14,7 +14,7 @@ private:
 	glm::mat4 modelMatrix;
 
 	std::vector<glm::vec2> offsets;
-	int amount = 10;
+	int amount = 1;
 
 	std::unordered_map<std::string, Mesh> meshTable; // <name, index> to create child-parent meshes.
 
@@ -47,6 +47,7 @@ public:
 
 	/* Function */
 	void update(float dt);
+	void drawDepthMap(const Shader& shader);
 	void draw(const Shader& shader);
 
 	/* Getter */

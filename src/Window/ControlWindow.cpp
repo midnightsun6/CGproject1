@@ -14,7 +14,8 @@ namespace CG
 
 	void ControlWindow::Display()
 	{
-		static std::vector<const char*> modelsName;
+		static std::vector<std::string> modelsName;
+		static std::vector<const char*> modelsNameDisplay;
 		static int modelsIdx = 0;
 
 		static AnimationClip copyAnimation;
@@ -79,14 +80,20 @@ namespace CG
 			if (ImGui::Button("Load Object")) {
 				targetScene->loadModel(path, newName);
 				modelsName.push_back(newName);
+				modelsNameDisplay.clear();
+				for (const auto& s : modelsName) {
+					modelsNameDisplay.push_back(s.c_str());
+				}
+				memset(path, 0, sizeof(path));
+				memset(newName, 0, sizeof(newName));
 			}
 			ImGui::NewLine();
 
 			// Loading Animation of the model.
-			ImGui::Combo("Model Name", &modelsIdx, modelsName.data(), modelsName.size());
+			ImGui::Combo("Model Name", &modelsIdx, modelsNameDisplay.data(), modelsNameDisplay.size());
 			ImGui::InputText("Animation Path", animation, sizeof(animation));
 			if (ImGui::Button("Load Animation into Object")) {
-				targetScene->importAnimation(modelsName[modelsIdx], animation);
+				targetScene->importAnimation(modelsNameDisplay[modelsIdx], animation);
 			}
 			ImGui::NewLine();
 
@@ -97,7 +104,7 @@ namespace CG
 				ImGui::InputFloat3("Rotation", rot);
 				ImGui::InputFloat3("Scale", sca);
 				if (ImGui::Button("Apply")) {
-					targetScene->transformateModel(modelsName[modelsIdx], tra, rot, sca);
+					targetScene->transformateModel(modelsNameDisplay[modelsIdx], tra, rot, sca);
 				}
 			}
 		}
@@ -115,9 +122,9 @@ namespace CG
 			static std::unordered_map<std::string, AnimationClip> animations;
 
 			// Dynamic update the animation table of the selected model
-			ImGui::Combo("Choose a Model", &modelsIdx, modelsName.data(), modelsName.size());
+			ImGui::Combo("Choose a Model", &modelsIdx, modelsNameDisplay.data(), modelsNameDisplay.size());
 			if (!modelsName.empty()) {
-				animations = targetScene->getModel(modelsName[modelsIdx]).getAnimator().getAnimations();
+				animations = targetScene->getModel(modelsNameDisplay[modelsIdx]).getAnimator().getAnimations();
 			}
 
 			ImGui::BeginChild("Animations", ImVec2(0, 150), true, ImGuiWindowFlags_HorizontalScrollbar);
@@ -170,7 +177,7 @@ namespace CG
 
 						ImGui::InputText("Export Filename", exportName, sizeof(exportName));
 						if (ImGui::Button("Export")) {
-							targetScene->exportAnimation(modelsName[modelsIdx], exportName, selectedAnimation.c_str());
+							targetScene->exportAnimation(modelsNameDisplay[modelsIdx], exportName, selectedAnimation.c_str());
 							clearExportParameters();
 						}
 						ImGui::SameLine(0, 30);
@@ -209,7 +216,7 @@ namespace CG
 				// Delete the animations
 				for (std::string& idx : remove) {
 					animations.erase(idx);
-					targetScene->deleteAnimation(modelsName[modelsIdx], idx.c_str());
+					targetScene->deleteAnimation(modelsNameDisplay[modelsIdx], idx.c_str());
 					if (idx == selectedAnimation) {
 						selectedAnimation = "";
 					}
@@ -219,7 +226,7 @@ namespace CG
 			ImGui::EndChild();
 
 			if (ImGui::Button("Play Animation")) {
-				targetScene->playAnimation(modelsName[modelsIdx], selectedAnimation.c_str());
+				targetScene->playAnimation(modelsNameDisplay[modelsIdx], selectedAnimation.c_str());
 			}
 
 			std::string selectedLabel = "Selected Animation: " + selectedAnimation;
@@ -396,7 +403,7 @@ namespace CG
 						isLoop = false;
 					};
 
-					ImGui::Combo("Choose a Model", &modelsIdx, modelsName.data(), modelsName.size());
+					ImGui::Combo("Choose a Model", &modelsIdx, modelsNameDisplay.data(), modelsNameDisplay.size());
 					ImGui::InputText("Animation Name", name, sizeof(name));
 					ImGui::InputFloat("Duration Time", &duration);
 					ImGui::InputFloat("Play Speed", &speed);
@@ -409,7 +416,7 @@ namespace CG
 						clip.duration = duration;
 						clip.speed = speed;
 						clip.isLoop = isLoop;
-						targetScene->addAnimation(modelsName[modelsIdx], clip);
+						targetScene->addAnimation(modelsNameDisplay[modelsIdx], clip);
 
 						clearAddAnimationWindow();
 						//clearAnimationContent();
@@ -426,7 +433,7 @@ namespace CG
 
 			if (isOnPreviewAnimation) {
 				static bool isPlaying = false;
-				const Animator& animator = targetScene->getModel(modelsName[modelsIdx]).getAnimator();
+				const Animator& animator = targetScene->getModel(modelsNameDisplay[modelsIdx]).getAnimator();
 
 				if (!isPlaying) {
 					AnimationClip clip;
@@ -438,12 +445,12 @@ namespace CG
 						clip.duration = std::max(clip.duration, track.keyFrames.back().time);
 					}
 
-					targetScene->addAnimation(modelsName[modelsIdx], clip);
-					targetScene->playAnimation(modelsName[modelsIdx], clip.name.c_str());
+					targetScene->addAnimation(modelsNameDisplay[modelsIdx], clip);
+					targetScene->playAnimation(modelsNameDisplay[modelsIdx], clip.name.c_str());
 					isPlaying = true;
 				}
 				else if (isPlaying && !animator.isOnPlaying()) {
-					targetScene->deleteAnimation(modelsName[modelsIdx], "####Preview Animation####");
+					targetScene->deleteAnimation(modelsNameDisplay[modelsIdx], "####Preview Animation####");
 					isOnPreviewAnimation = false;
 					isPlaying = false;
 				}

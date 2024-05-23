@@ -1,0 +1,48 @@
+newmtl stage:Chrome
+illum 4
+Kd 0.15 0.14 0.14
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 94.12
+newmtl stage:floor
+illum 4
+Kd 0.06 0.06 0.06
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 94.12
+newmtl stage:footings
+illum 4
+Kd 0.01 0.01 0.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 94.12
+newmtl stage:light_handle
+illum 4
+Kd 0.03 0.02 0.04
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 92.16
+newmtl stage:light_inside_bar
+illum 4
+Kd 0.48 0.64 0.19
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 92.16
+newmtl stage:light_pot
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 92.16

@@ -6,15 +6,18 @@ MainScene::MainScene() {
 
 MainScene::~MainScene() {}
 
-bool MainScene::Initialize() {
+bool MainScene::initialize() {
     GLenum res = glewInit();
     if (res != GLEW_OK) {
         fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
         return false;
     }
 
+    shaderManager->init();
+
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
 
     // Init objects.
     grid.init(GL_LINES);
@@ -23,16 +26,20 @@ bool MainScene::Initialize() {
     box.init(GL_TRIANGLES);
     setBox(1);
 
-    shaderManager->init();
+    mirror.init(5.0, 100, 100);
+    mirror.translate(0, 30, 0);
 
-    // addSphere(2.0, 100, 100, glm::vec3(0.2, 0.2, 0.2));
+    //addSphere(2.0, 100, 100, glm::vec3(1.0, 0.2, 0.2));
 
-    //particle = ParticleSystem(10.f, 50000);
+    particle = ParticleSystem(10.f, 50000);
+
+    //this->loadModel("Android Robot/AndroidBot.obj", "android");
+    //this->loadModel("floor/Wood_Floor_001_OBJ.obj", "floor");
 
     return true;
 }
 
-void MainScene::Update(double dt) {
+void MainScene::update(double dt) {
     // Update total time for object movement
     totalTime += dt;
 
@@ -50,64 +57,129 @@ void MainScene::Update(double dt) {
     particle.update(dt);
 }
 
-void MainScene::Render() {
+void MainScene::render() {
+    this->captureEnvironment();
+
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // BaseObjects
-    shaderManager->useShader(SHADER_BASE_SHAPE);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
-    box.draw(shaderManager->getCurrShader());
-    //grid.Draw(camera.getProjectionMatrix(), camera.getViewMatrix(), baseObjShader);
-    for (auto& obj : spheres) {
-        obj.draw(shaderManager->getCurrShader());
+    this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+    this->renderReflection();
+}
+
+void MainScene::captureEnvironment() {
+    const GLuint& captureFBO = mirror.getCaptureFBO();
+    const GLuint& captureRBO = mirror.getCaptureRBO();
+    const GLuint& envCubemap = mirror.getEnvCubemap();
+    const int& captureSize = mirror.getCaptureSize();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, captureSize, captureSize);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
+
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    for (unsigned int i = 0; i < 6; ++i) {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, captureSize, captureSize);
+
+        this->renderScene(mirror.getCaptureProjection(), mirror.getCaptureView(i), captureSize, captureSize);
     }
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+}
+
+void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight) {
+    // Skybox
+    shaderManager->useShader(SHADER_CUBEMAP);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    skybox.draw(shaderManager->getCurrShader());
+
+    // Terrian
+    shaderManager->useShader(SHADER_TERRIAN);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    terrian.draw(shaderManager->getCurrShader());
+
+    // Grass
+    shaderManager->useShader(SHADER_GRASS);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    grass.draw(shaderManager->getCurrShader());
+
+    // Model's light
+    float near_plane = 0.1f, far_plane = 20.0f;
+    glm::vec3 lightPos = camera.getCameraPos();
+    //glm::vec3 lightPos = glm::vec3(0.0f, 50.0f, 10.0f);
+    glm::mat4 lightProjection = glm::ortho(-35.f, 35.f, -35.f, 35.f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // 固定方向
+    glm::mat4 lightSpace = lightProjection * lightView;
+    glm::vec3 lightColor = glm::vec3(1.0f);
+
+
+    /*float near_plane = 1.0f, far_plane = 20.0f;
+    glm::vec3 lightPos = camera.getCameraPos();
+    glm::mat4 lightProjection = glm::ortho(-10.f, 10.f, -10.f, 10.f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(lightPos, lightPos + camera.getCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 lightSpace = lightProjection * lightView;
+    glm::vec3 lightColor = glm::vec3(1.0f);*/
+
+    // Model's shadow depth map
+    /*shaderManager->useShader(SHADER_DEPTH_MAP);
+    shaderManager->setCurrUniform("lightSpace", lightSpace);
+    for (auto& [_, m] : models) {
+        m.drawDepthMap(shaderManager->getCurrShader());
+    }*/
+
     // Models
+    glViewport(0, 0, screenWidth, screenHeight);
     shaderManager->useShader(SHADER_MODEL);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
     shaderManager->setCurrUniform("screenWidth", screenWidth);
     shaderManager->setCurrUniform("screenHeight", screenHeight);
 
-    // Model's light
-    glm::vec3 lightPos = glm::vec3(-5.0, 10.f, 10.f);
-    glm::vec3 lightColor = glm::vec3(1.0f);
     shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
-    shaderManager->setCurrUniform("lightPos", camera.getCameraPos());
+    shaderManager->setCurrUniform("lightPos", lightPos);
+    shaderManager->setCurrUniform("lightSpace", lightSpace);
     shaderManager->setCurrUniform("lightColor", lightColor);
 
     for (auto& [_, m] : models) {
         m.draw(shaderManager->getCurrShader());
     }
 
-    // Terrian
-    shaderManager->useShader(SHADER_TERRIAN);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
-    terrian.draw(shaderManager->getCurrShader());
-
-    // Skybox
-    shaderManager->useShader(SHADER_CUBEMAP);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
-    skybox.draw(shaderManager->getCurrShader());
-
-    // Grass
-    shaderManager->useShader(SHADER_GRASS);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
-    grass.draw(shaderManager->getCurrShader());
-
     // Fountain particle
     shaderManager->useShader(SHADER_PARTICLE_FOUNTAIN);
-    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
     particle.draw(shaderManager->getCurrShader());
+
+    // BaseObjects
+    shaderManager->useShader(SHADER_BASE_SHAPE);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    //box.draw(shaderManager->getCurrShader());
+    //grid.draw(shaderManager->getCurrShader());
+    for (auto& obj : spheres) {
+        //obj.draw(shaderManager->getCurrShader());
+    }
 }
 
-void MainScene::OnResize(int width, int height) {
+void MainScene::renderReflection() {
+    // Reflection Object
+    shaderManager->useShader(SHADER_REFLECTION);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    shaderManager->setCurrUniform("cameraPos", camera.getCameraPos());
+    mirror.draw(shaderManager->getCurrShader());
+}
+
+void MainScene::onResize(int width, int height) {
     this->screenWidth = width;
     this->screenHeight = height;
     camera.updateWindowSize(width, height);

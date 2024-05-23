@@ -332,6 +332,12 @@ void Model::setModel(const char* filename) {
 	this->loadModel(filename);
 }
 
+void Model::drawDepthMap(const Shader& shader) {
+	for (auto& mesh : meshes) {
+		mesh.drawDepthMap(shader, animator, modelMatrix, offsets, amount);
+	}
+}
+
 void Model::draw(const Shader& shader) {
 	for (auto& mesh : meshes) {
 		mesh.draw(shader, animator, modelMatrix, offsets, amount);

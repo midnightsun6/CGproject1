@@ -71,7 +71,7 @@ namespace CG
 				glViewport(0, 0, w, h);
 				auto app = static_cast<App*>(glfwGetWindowUserPointer(window));
 				auto mainScene = app->GetMainScene();
-				mainScene->OnResize(w, h);
+				mainScene->onResize(w, h);
 			}
 		);
 
@@ -136,7 +136,7 @@ namespace CG
 		controlWindow->Initialize();
 
 		mainScene = new MainScene();
-		mainScene->Initialize();
+		mainScene->initialize();
 
 		controlWindow->SetTargetScene(mainScene);
 
@@ -222,7 +222,7 @@ namespace CG
 
 	void App::Update(double dt)
 	{
-		mainScene->Update(dt);
+		mainScene->update(dt);
 	}
 
 	void App::Render()
@@ -230,6 +230,6 @@ namespace CG
 		int display_w, display_h;
 		glfwGetFramebufferSize(mainWindow, &display_w, &display_h);
 
-		mainScene->Render();
+		mainScene->render();
 	}
 }

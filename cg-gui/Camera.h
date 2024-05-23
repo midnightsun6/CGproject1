@@ -54,6 +54,7 @@ public:
 
 	/* Getter and Setter */
 	const glm::vec3& getCameraPos() const;
+	const glm::vec3& getCameraFront() const;
 	const glm::mat4& getProjectionMatrix() const;
 	const glm::mat4& getViewMatrix() const;
 };

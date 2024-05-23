@@ -8,6 +8,7 @@
 #include "../../cg-gui/Grass.h"
 #include "../../cg-gui/ParticleSystem.h"
 #include "../../cg-gui/ShaderManager.h"
+#include "../../cg-gui/ReflectionSphere.h"
 
 class MainScene {
 private:
@@ -28,6 +29,7 @@ private:
 	std::vector<GLBaseObject> spheres;
 
 	/* Object */
+	ReflectionSphere mirror;
 	std::unordered_map<std::string, Model> models;
 
 	/* Particle */
@@ -47,10 +49,16 @@ public:
 	InputController* input = InputController::getInstance();
 
 	/* Scene functions */
-	bool Initialize();
-	void Update(double dt);
-	void Render();
-	void OnResize(int width, int height);
+	bool initialize();
+	void update(double dt);
+	void render();
+
+	void captureEnvironment();
+	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight);
+	void renderReflection();
+
+	/* Callback functions */
+	void onResize(int width, int height);
 
 	/* OpenGL Base Object functions */
 	void setBox(float size);

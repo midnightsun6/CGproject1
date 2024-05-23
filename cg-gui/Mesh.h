@@ -36,7 +36,10 @@ private:
 	std::vector<Mesh> children;
 
 	GLuint VAO, VBO, EBO, insVBO;
+	GLuint depthMapFBO, depthMap;
 	glm::mat4 transform, invTransform;
+
+	GLuint SHADOW_WIDTH, SHADOW_HEIGHT;
 
 	unsigned int getWhiteTexture();
 	void setupMesh();
@@ -49,6 +52,8 @@ public:
 
 	void setCenter(glm::vec3 center);
 	void addChild(Mesh mesh);
+
+	void drawDepthMap(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount);
 	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount);
 
 	void setName(const std::string& name);

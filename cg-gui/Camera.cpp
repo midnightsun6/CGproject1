@@ -45,7 +45,7 @@ void Camera::updateCameraScrollMovement(glm::vec2 mouseMoveDelta) {
 
 void Camera::updateCameraMovement(CameraMovement cameraMovement) {
 	// Camera speed up
-	float moveSpeed = cameraSpeed;
+	float moveSpeed = cameraSpeed * 5;
 	if (input->getCameraMovementInput(CameraMovement::SPEED_UP)) {
 		moveSpeed *= cameraSpeedUp;
 	}
@@ -105,6 +105,10 @@ void Camera::update() {
 
 const glm::vec3& Camera::getCameraPos() const {
 	return cameraPos;
+}
+
+const glm::vec3& Camera::getCameraFront() const {
+	return cameraFront;
 }
 
 const glm::mat4& Camera::getProjectionMatrix() const {

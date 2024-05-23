@@ -68,6 +68,9 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectionSphere.cpp">
+      <Filter>Object\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -129,6 +132,12 @@
     </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{5d6b4d03-b9da-4530-84fa-54c74721e79a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Depth Map">
+      <UniqueIdentifier>{ff296db7-ae70-4d6a-8b89-4b2b3f75799e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Reflection">
+      <UniqueIdentifier>{bac8dbcd-88bc-4d49-8c93-f07942ca977d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +205,9 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="ReflectionSphere.h">
+      <Filter>Object\Shape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\res\shaders\particle.gs.glsl">
@@ -245,6 +257,24 @@
     </None>
     <None Include="..\res\res\shaders\shader.fs.glsl">
       <Filter>Shader\Shape</Filter>
+    </None>
+    <None Include="..\res\res\shaders\depth_map.vs.glsl">
+      <Filter>Shader\Depth Map</Filter>
+    </None>
+    <None Include="..\res\res\shaders\depth_map.fs.glsl">
+      <Filter>Shader\Depth Map</Filter>
+    </None>
+    <None Include="..\res\res\shaders\debugDepthShader.frag">
+      <Filter>Shader\Depth Map</Filter>
+    </None>
+    <None Include="..\res\res\shaders\debugDepthShader.vert">
+      <Filter>Shader\Depth Map</Filter>
+    </None>
+    <None Include="..\res\res\shaders\reflection.vs.glsl">
+      <Filter>Shader\Reflection</Filter>
+    </None>
+    <None Include="..\res\res\shaders\reflection.fs.glsl">
+      <Filter>Shader\Reflection</Filter>
     </None>
   </ItemGroup>
 </Project>
