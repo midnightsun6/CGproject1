@@ -31,7 +31,9 @@ bool MainScene::initialize() {
 
     //addSphere(2.0, 100, 100, glm::vec3(1.0, 0.2, 0.2));
 
-    particle = ParticleSystem(10.f, 50000);
+    //particle = ParticleSystem(PARTICLE_TYPE_FOUNTAIN, 10.f, 50000);
+    particle = ParticleSystem(PARTICLE_TYPE_KAMEHAMEHA, 5, 1e5);
+    //particle.loadTexuture("kamehameha1.png");
 
     //this->loadModel("Android Robot/AndroidBot.obj", "android");
     //this->loadModel("floor/Wood_Floor_001_OBJ.obj", "floor");
@@ -54,6 +56,7 @@ void MainScene::update(double dt) {
     box.rotate(totalTime * angle, 0, 1, 0);
     box.translate(totalTime * speed, 0, 0);
 
+    particle.emit(glm::vec3(0, 10, 0), glm::vec3(20, 0, 0), 1000);
     particle.update(dt);
 }
 

@@ -2,6 +2,12 @@
 #include "Definition.h"
 #include "Shader.h"
 
+enum ParticleType {
+    PARTICLE_TYPE_FOUNTAIN,
+    PARTICLE_TYPE_FIRE,
+    PARTICLE_TYPE_KAMEHAMEHA,
+    PARTICLE_TYPE_NONE
+};
 
 struct Particle {
     /* Particle */
@@ -9,29 +15,36 @@ struct Particle {
     glm::vec3 velocity;
     float lifetime, maxLifetime;
     glm::vec4 color;
-    float radius;
+    float size;
+    int trailCount;
 
-    Particle() : position(0.f), velocity(0.f), lifetime(0.f), maxLifetime(0.f), color(glm::vec4(1.f)), radius(5.f) {}
+    Particle() :
+        position(glm::vec3(0.f)), velocity(glm::vec3(0.f)), lifetime(0), maxLifetime(0),
+        color(glm::vec4(0.f)), size(0), trailCount(0) {}
 };
 
 
 class ParticleSystem {
 private:
+    ParticleType type;
+
     std::vector<Particle> particles;
     float particleLife;
     int maxParticles;
-
-    float currTime = 0;
+    int lastUsedParticle;
 
     GLuint VAO, VBO;
-    GLuint trailVAO, trailVBO;
-
-    void respawnParticle(Particle& p);
+    GLuint textureID;
+    bool useTexture;
+    
+    void respawnParticle(Particle& p, const glm::vec3& pos, const glm::vec3& vel);
 
 public:
     ParticleSystem();
-    ParticleSystem(float particleLife, int maxParticles);
+    ParticleSystem(ParticleType type, float particleLife, int maxParticles);
 
+    void loadTexuture(const std::string& path);
+    void emit(const glm::vec3& pos, const glm::vec3& vel, const int& count);
     void update(float dt);
     void draw(const Shader& shader);
 };
