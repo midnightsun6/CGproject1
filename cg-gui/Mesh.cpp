@@ -127,7 +127,7 @@ void Mesh::addChild(Mesh mesh) {
 	children.push_back(mesh);
 }
 
-void Mesh::drawDepthMap(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount) {
+void Mesh::drawDepthMap(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec3>& offsets, const int& amount) {
 	glm::mat4 animation = animator.getAnimationMatrix(this->name);
 	glm::mat4 model = parentModel * transform * animation * invTransform;
 	shader.setUniform("model", model);
@@ -142,8 +142,8 @@ void Mesh::drawDepthMap(const Shader& shader, Animator& animator, const glm::mat
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
-	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec2), &offsets[0], GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec3), &offsets[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glVertexAttribDivisor(3, 1);
 	glEnableVertexAttribArray(3);
 
@@ -152,7 +152,45 @@ void Mesh::drawDepthMap(const Shader& shader, Animator& animator, const glm::mat
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount) {
+void Mesh::drawPrevVelocity(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const glm::mat4& prevParentModel, const std::vector<glm::vec3>& offsets, const int& amount) {
+	glm::mat4 prevAnimation = animator.getPrevAnimationMatrix(this->name);
+	glm::mat4 animation = animator.getAnimationMatrix(this->name);
+	glm::mat4 prevModel = prevParentModel * transform * prevAnimation * invTransform;
+	glm::mat4 model = parentModel * transform * animation * invTransform;
+	for (auto& child : children) {
+		child.drawPrevVelocity(shader, animator, model, prevModel, offsets, amount);
+	}
+
+	shader.setUniform("model", model);
+	shader.setUniform("prevModel", prevModel);
+	shader.setUniform("isInstanced", false);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
+	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec3), &offsets[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribDivisor(1, 1);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
+	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec3), &offsets[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribDivisor(2, 1);
+	glEnableVertexAttribArray(2);
+
+	glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, std::min(amount, (int)offsets.size()));
+}
+
+void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec3>& offsets, const int& amount) {
 	glm::mat4 animation = animator.getAnimationMatrix(this->name);
 	glm::mat4 model = parentModel * transform * animation * invTransform;
 	//glm::mat4 model = parentModel * transform * animation;
@@ -174,7 +212,7 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 	GLuint heightNr = 1;
 	for (int i = 0; i < textures.size(); i++) {
 		// Active the texture before bind it.
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE9 + i);
 
 		std::string number;
 		std::string name = textures[i].type;
@@ -194,18 +232,51 @@ void Mesh::draw(const Shader& shader, Animator& animator, const glm::mat4& paren
 		shader.setUniform(name + number, i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-	glActiveTexture(GL_TEXTURE0);
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE10);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	shader.setUniform("shadowMap", 1);
+	shader.setUniform("shadowMap", 10);
 
 	// Draw a mesh.
 	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+
+	// Set vertex pointer
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+
+	// Set normal pointer
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, normal));
+
+	// Set texture pointer
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoords));
+
+	// Set tangent pointer
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, tangent));
+
+	// Set bitangent pointer
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, bitangent));
+
+	// Set Bones ID pointer
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, bonesID));
+
+	// Set weights pointer
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, weights));
 	
 	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
-	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec2), &offsets[0], GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec3), &offsets[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glVertexAttribDivisor(3, 1);
 	glEnableVertexAttribArray(3);
 

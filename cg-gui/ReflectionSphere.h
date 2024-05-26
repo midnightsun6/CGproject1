@@ -7,7 +7,7 @@ private:
     GLuint captureFBO, captureRBO, envCubemap;
     int captureSize = 1024;
 
-    glm::mat4 model;
+    glm::mat4 model, prevModel;
     glm::mat4 captureProjection;
     std::vector<glm::mat4> captureViews;
     std::vector<float> data;
@@ -19,6 +19,7 @@ public:
 
     void translate(float dx, float dy, float dz);
 
+    void drawPrevVelocity(const Shader& shader);
     void draw(const Shader& shader);
 
     const int& getCaptureSize();

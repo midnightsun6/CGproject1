@@ -53,8 +53,9 @@ public:
 	void setCenter(glm::vec3 center);
 	void addChild(Mesh mesh);
 
-	void drawDepthMap(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount);
-	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec2>& offsets, const int& amount);
+	void drawPrevVelocity(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const glm::mat4& prevParentModel, const std::vector<glm::vec3>& offsets, const int& amount);
+	void drawDepthMap(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec3>& offsets, const int& amount);
+	void draw(const Shader& shader, Animator& animator, const glm::mat4& parentModel, const std::vector<glm::vec3>& offsets, const int& amount);
 
 	void setName(const std::string& name);
 	void setTransform(const glm::mat4 transform);

@@ -22,7 +22,7 @@ uniform mat4 projection;
 void main() {
 	if (gs_in[0].lifetime > 0) {
 		// Trail length
-		int numPoints = min(gs_in[0].trailCount, 64);
+		int numPoints = min(gs_in[0].trailCount + 1, 64);
 
 		for (int i = 0; i < numPoints; i++) {
 			float factor = float(gs_in[0].lifetime / float(numPoints - 1)) * float(i) / gs_in[0].lifetime;

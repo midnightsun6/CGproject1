@@ -155,6 +155,14 @@ void Animator::clear() {
 	this->isPlaying = false;
 }
 
+const glm::mat4& Animator::getPrevAnimationMatrix(std::string part) {
+	AnimationClip& clip = animations[currAnimation];
+	if (!clip.tracks.count(part)) {
+		return glm::mat4(1.f);
+	}
+	return prevAnimationMatrix[part];
+}
+
 const glm::mat4& Animator::getAnimationMatrix(std::string part) {
 	if (!animations.count(currAnimation)) {
 		return glm::mat4(1.f);
@@ -167,7 +175,7 @@ const glm::mat4& Animator::getAnimationMatrix(std::string part) {
 
 	Track& track = clip.tracks[part];
 	if (isPlaying) {
-		return track.interpolate(currTime, clip.speed);
+		return prevAnimationMatrix[part] = track.interpolate(currTime, clip.speed);
 	}
-	return track.interpolate(clip.duration, clip.speed);
+	return prevAnimationMatrix[part] = track.interpolate(clip.duration, clip.speed);
 }

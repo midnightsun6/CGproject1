@@ -9,6 +9,15 @@
 #include "../../cg-gui/ParticleSystem.h"
 #include "../../cg-gui/ShaderManager.h"
 #include "../../cg-gui/ReflectionSphere.h"
+#include "../../cg-gui/MotionBlur.h"
+#include "../../cg-gui/Mosaic.h"
+
+enum RenderType {
+	RENDER_TYPE_NORMAL,
+	RENDER_TYPE_MOSAIC,
+	RENDER_TYPE_MOTION_BLUR,
+	RENDER_TYPE_SHADOW,
+};
 
 class MainScene {
 private:
@@ -34,6 +43,8 @@ private:
 
 	/* Particle */
 	ParticleSystem particle;
+	MotionBlur motionBlur;
+	Mosaic mosaic;
 
 	/* Shaders */
 	ShaderManager* shaderManager = ShaderManager::getInstance();
@@ -53,9 +64,14 @@ public:
 	void update(double dt);
 	void render();
 
+	/* Detail Render Functions */
 	void captureEnvironment();
 	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight);
 	void renderReflection();
+	void renderVelocity();
+	void renderColor();
+	void renderMotionBlur();
+	void renderMosaic();
 
 	/* Callback functions */
 	void onResize(int width, int height);

@@ -30,3 +30,23 @@
 #include <stb\stb_image.h>
 
 #define MAX_BONE_INFLUENCE 4
+
+/*
+    Texture ID
+
+    Skybox: 3
+    Terrian: 4
+    ReflectionSphere: 5
+    Particle: 6
+    Velocity: 7
+    Color: 8
+    Model: 9
+    Model shadow map: 10
+    Mosaic: 11
+    Grass: 15, 16, 17
+*/
+
+
+
+
+

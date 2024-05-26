@@ -46,6 +46,7 @@ public:
     void loadTexuture(const std::string& path);
     void emit(const glm::vec3& pos, const glm::vec3& vel, const int& count);
     void update(float dt);
+    void drawPrevVelocity(const Shader& shader);
     void draw(const Shader& shader);
 };
 

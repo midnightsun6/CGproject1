@@ -6,7 +6,7 @@ class Terrian {
 private:
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<glm::vec2> translation;
+	std::vector<glm::vec3> offsets;
 	GLuint texture;
 	GLuint VAO, VBO, EBO;
 	GLuint insVBO;
@@ -16,6 +16,7 @@ private:
 public:
 	Terrian();
 
+	void drawPrevVelocity(const Shader& shader);
 	void draw(const Shader& shader);
 };
 

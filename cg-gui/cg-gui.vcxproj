@@ -159,6 +159,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mosaic.cpp" />
+    <ClCompile Include="MotionBlur.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="ReflectionSphere.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -184,6 +186,8 @@
     <ClInclude Include="InputController.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Mosaic.h" />
+    <ClInclude Include="MotionBlur.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ReflectionSphere.h" />
     <ClInclude Include="Shader.h" />
@@ -202,11 +206,16 @@
     <None Include="..\res\res\shaders\grass.vs.glsl" />
     <None Include="..\res\res\shaders\model_loading.fs.glsl" />
     <None Include="..\res\res\shaders\model_loading.vs.glsl" />
-    <None Include="..\res\res\shaders\model_loading_mosaic.fs.glsl" />
-    <None Include="..\res\res\shaders\model_loading_mosaic.vs.glsl" />
     <None Include="..\res\res\shaders\model_loading_toon.fs.glsl" />
+    <None Include="..\res\res\shaders\motion_blur.fs.glsl" />
+    <None Include="..\res\res\shaders\motion_blur.vs.glsl" />
+    <None Include="..\res\res\shaders\mosaic.fs.glsl" />
+    <None Include="..\res\res\shaders\mosaic.vs.glsl" />
+    <None Include="..\res\res\shaders\velocity_particle.fs.glsl" />
     <None Include="..\res\res\shaders\particle.fs.glsl" />
+    <None Include="..\res\res\shaders\velocity_particle.gs.glsl" />
     <None Include="..\res\res\shaders\particle.gs.glsl" />
+    <None Include="..\res\res\shaders\velocity_particle.vs.glsl" />
     <None Include="..\res\res\shaders\particle.vs.glsl" />
     <None Include="..\res\res\shaders\reflection.fs.glsl" />
     <None Include="..\res\res\shaders\reflection.vs.glsl" />
@@ -214,6 +223,8 @@
     <None Include="..\res\res\shaders\shader.vs.glsl" />
     <None Include="..\res\res\shaders\terrian.fs.glsl" />
     <None Include="..\res\res\shaders\terrian.vs.glsl" />
+    <None Include="..\res\res\shaders\velocity.fs.glsl" />
+    <None Include="..\res\res\shaders\velocity.vs.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

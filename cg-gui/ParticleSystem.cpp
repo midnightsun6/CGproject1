@@ -137,6 +137,50 @@ void ParticleSystem::update(float dt) {
     }
 }
 
+void ParticleSystem::drawPrevVelocity(const Shader& shader) {
+    glEnable(GL_BLEND);
+    glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SPRITE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthFunc(GL_LEQUAL);
+
+    shader.setUniform("model", glm::mat4(1.f));
+    shader.setUniform("prevModel", glm::mat4(1.f));
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), particles.data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, position));
+    glEnableVertexAttribArray(0);
+    glVertexAttribDivisor(0, 1);
+
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
+    glEnableVertexAttribArray(1);
+    glVertexAttribDivisor(1, 1);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, velocity));
+    glEnableVertexAttribArray(2);
+    glVertexAttribDivisor(2, 1);
+
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, lifetime));
+    glEnableVertexAttribArray(3);
+    glVertexAttribDivisor(3, 1);
+
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, size));
+    glEnableVertexAttribArray(4);
+    glVertexAttribDivisor(4, 1);
+
+    glVertexAttribIPointer(5, 1, GL_INT, sizeof(Particle), (void*)offsetof(Particle, trailCount));
+    glEnableVertexAttribArray(5);
+    glVertexAttribDivisor(5, 1);
+
+    glDrawArraysInstanced(GL_POINTS, 0, 1, particles.size());
+
+    glDisable(GL_PROGRAM_POINT_SIZE);
+    glDisable(GL_BLEND);
+}
+
 void ParticleSystem::draw(const Shader& shader) {
     glEnable(GL_BLEND);
     glEnable(GL_PROGRAM_POINT_SIZE);
@@ -148,9 +192,9 @@ void ParticleSystem::draw(const Shader& shader) {
     shader.setUniform("useTexture", useTexture);
 
     if (useTexture) {
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE6);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        shader.setUniform("particleTexture", 0);
+        shader.setUniform("particleTexture", 6);
     }
 
     glBindVertexArray(VAO);

@@ -5,8 +5,8 @@ Camera::Camera() {
 	cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
-	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection = glm::perspective(fovy, (float)width / height, near, far);
+	prevView = view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	prevProjection = projection = glm::perspective(fovy, (float)width / height, near, far);
 }
 
 Camera::~Camera() {}
@@ -99,7 +99,9 @@ void Camera::update() {
 
     // Update camera matrix
 	float apect = (height == 0 ? 1 : (float)width / height);
+	prevView = view;
     view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	prevProjection = projection;
 	projection = glm::perspective(fovy, apect, near, far);
 }
 
@@ -109,6 +111,14 @@ const glm::vec3& Camera::getCameraPos() const {
 
 const glm::vec3& Camera::getCameraFront() const {
 	return cameraFront;
+}
+
+const glm::mat4& Camera::getPrevProjectionMatrix() const {
+	return this->prevProjection;
+}
+
+const glm::mat4& Camera::getPrevViewMatrix() const {
+	return this->prevView;
 }
 
 const glm::mat4& Camera::getProjectionMatrix() const {

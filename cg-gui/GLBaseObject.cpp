@@ -4,7 +4,7 @@ GLBaseObject::GLBaseObject() {}
 
 void GLBaseObject::init(GLenum type) {
 	this->type = type;
-	model = glm::mat4(1.f);
+	prevModel = model = glm::mat4(1.f);
 
 	// VAO
 	glGenVertexArrays(1, &VAO);
@@ -50,6 +50,24 @@ void GLBaseObject::scale(float x, float y, float z) {
 	model = glm::scale(glm::mat4(1.f), glm::vec3(x, y, z)) * model;
 }
 
+void GLBaseObject::drawPrevVelocity(const Shader& shader) {
+	shader.setUniform("model", model);
+	shader.setUniform("prevModel", prevModel);
+	shader.setUniform("isInstanced", false);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, pVBOs);
+	glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), &points[0], GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
+
+	glDrawElements(type, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
 void GLBaseObject::draw(const Shader& shader) {
 	glBindVertexArray(VAO);
 
@@ -69,4 +87,6 @@ void GLBaseObject::draw(const Shader& shader) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_DYNAMIC_DRAW);
 
 	glDrawElements(type, indices.size(), GL_UNSIGNED_INT, 0);
+
+	this->prevModel = model;
 }

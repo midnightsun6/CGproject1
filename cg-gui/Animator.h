@@ -96,6 +96,7 @@ private:
 	bool isPlaying;
 
 	std::string currAnimation;
+	std::unordered_map<std::string, glm::mat4> prevAnimationMatrix;
 	std::unordered_map<std::string, AnimationClip> animations;
 
 public:
@@ -117,6 +118,7 @@ public:
 	/* Getter */
 	const bool isOnPlaying() const;
 	const std::unordered_map<std::string, AnimationClip>& getAnimations() const;
+	const glm::mat4& getPrevAnimationMatrix(std::string part);
 	const glm::mat4& getAnimationMatrix(std::string part);
 };
 

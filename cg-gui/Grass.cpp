@@ -35,7 +35,6 @@ Grass::Grass() {
 
     loadTexture();
 
-
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -55,7 +54,7 @@ Grass::Grass() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    instancePositions.resize(grassNum);
+    offsets.resize(grassNum);
 
     srand(time(NULL));
 
@@ -63,13 +62,13 @@ Grass::Grass() {
         float x = static_cast<float>(rand() % grassRangeX) - grassRangeX / 2; 
         float z = static_cast<float>(rand() % grassRangeZ) - grassRangeZ / 2;  
 
-        instancePositions[i] = glm::vec2(x, z);
+        offsets[i] = glm::vec3(x, 0, z);
     }
 
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, instancePositions.size() * sizeof(glm::vec2), &instancePositions[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glVertexAttribDivisor(2, 1);
     glEnableVertexAttribArray(2);
 }
@@ -92,6 +91,7 @@ void Grass::loadTexture()
             else if (nrComponents == 4)
                 format = GL_RGBA;
 
+            glActiveTexture(GL_TEXTURE15 + i);
             glBindTexture(GL_TEXTURE_2D, grassTextures[i]);
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -112,21 +112,75 @@ void Grass::loadTexture()
     stbi_set_flip_vertically_on_load(false);
 }
 
-void Grass::draw(const Shader& shader)
-{
-    glEnable(GL_BLEND);
+void Grass::drawPrevVelocity(const Shader& shader) {
+    shader.setUniform("model", glm::mat4(1.f));
+    shader.setUniform("prevModel", glm::mat4(1.f));
+    shader.setUniform("isInstanced", true);
 
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribDivisor(1, 1);
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribDivisor(2, 1);
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+    glDrawElementsInstanced(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0, grassNum);
+
+    glBindVertexArray(0);
+    //glDisableVertexAttribArray(0);
+    //glDisableVertexAttribArray(1);
+    //glDisableVertexAttribArray(2);
+}
+
+void Grass::draw(const Shader& shader) {
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     shader.setUniform("model", glm::mat4(1.0f));
    
     glBindVertexArray(VAO);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, grassTextures[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
-    //glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOTextures);
+    glBufferData(GL_ARRAY_BUFFER, textures.size() * sizeof(float), &textures[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribDivisor(2, 1);
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+    for (int i = 0; i < 3; ++i) {
+        glActiveTexture(GL_TEXTURE15 + i);
+        glBindTexture(GL_TEXTURE_2D, grassTextures[i]);
+    }
+    shader.setUniform("texture1", 15);
     
     glDrawElementsInstanced(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0, grassNum);
 
+    glDisable(GL_BLEND);
 }

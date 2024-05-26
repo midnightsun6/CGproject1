@@ -76,18 +76,39 @@ Skybox::Skybox() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     glGenTextures(1, &cubemap);
+    glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
 
     this->loadTexture();
 }
 
+void Skybox::drawPrevVelocity(const Shader& shader) {
+    shader.setUniform("model", glm::mat4(1.f));
+    shader.setUniform("prevModel", glm::mat4(1.f));
+    shader.setUniform("isInstanced", false);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(0);
+    glDisableVertexAttribArray(0);
+}
+
 void Skybox::draw(const Shader& shader) {
     glDepthMask(GL_FALSE);
 
-    shader.setUniform("skybox", 0);
-
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap);
+    shader.setUniform("skybox", 3);
 
     glBindVertexArray(VAO);
 

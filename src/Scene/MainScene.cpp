@@ -38,6 +38,9 @@ bool MainScene::initialize() {
     //this->loadModel("Android Robot/AndroidBot.obj", "android");
     //this->loadModel("floor/Wood_Floor_001_OBJ.obj", "floor");
 
+    motionBlur.setScreenSize(this->screenWidth, this->screenHeight);
+    mosaic.setScreenSize(this->screenWidth, this->screenHeight);
+
     return true;
 }
 
@@ -61,13 +64,49 @@ void MainScene::update(double dt) {
 }
 
 void MainScene::render() {
-    this->captureEnvironment();
+    RenderType type = RENDER_TYPE_MOSAIC;
 
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    switch (type) {
+        case RENDER_TYPE_NORMAL:
+        {
+            this->captureEnvironment();
 
-    this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
-    this->renderReflection();
+            glClearColor(0, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+
+            this->renderReflection();
+            break;
+        }
+        case RENDER_TYPE_MOSAIC:
+        {
+            glClearColor(0, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            this->renderMosaic();
+            break;
+        }
+        case RENDER_TYPE_MOTION_BLUR:
+        {
+            this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+            this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+
+            glClearColor(0, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            this->renderVelocity();
+            this->renderColor();
+            this->renderMotionBlur();
+            break;
+        }
+        case RENDER_TYPE_SHADOW:
+        {
+
+        }
+        default:
+            break;
+    }
 }
 
 void MainScene::captureEnvironment() {
@@ -180,6 +219,84 @@ void MainScene::renderReflection() {
     shaderManager->setCurrUniform("view", camera.getViewMatrix());
     shaderManager->setCurrUniform("cameraPos", camera.getCameraPos());
     mirror.draw(shaderManager->getCurrShader());
+}
+
+void MainScene::renderVelocity() {
+    glBindFramebuffer(GL_FRAMEBUFFER, motionBlur.getVelocityFBO());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::mat4 projection = camera.getProjectionMatrix();
+    glm::mat4 view = camera.getViewMatrix();
+    glm::mat4 prevProjection = camera.getPrevProjectionMatrix();
+    glm::mat4 prevView = camera.getPrevViewMatrix();
+
+    // Velocity shader
+    shaderManager->useShader(SHADER_VELOCITY);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("prevProjection", prevProjection);
+    shaderManager->setCurrUniform("prevView", prevView);
+
+    skybox.drawPrevVelocity(shaderManager->getCurrShader());
+    //terrian.drawPrevVelocity(shaderManager->getCurrShader());
+    //grass.drawPrevVelocity(shaderManager->getCurrShader());
+    glViewport(0, 0, screenWidth, screenHeight);
+    for (auto& [_, m] : models) {
+        m.drawPrevVelocity(shaderManager->getCurrShader());
+    }
+
+    // Particle velocity shader
+    shaderManager->useShader(SHADER_VELOCITY_PARTICLE);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("prevProjection", prevProjection);
+    shaderManager->setCurrUniform("prevView", prevView);
+
+    particle.drawPrevVelocity(shaderManager->getCurrShader());
+
+    /*float near_plane = 1.0f, far_plane = 20.0f;
+    glm::vec3 lightPos = camera.getCameraPos();
+    glm::mat4 lightProjection = glm::ortho(-10.f, 10.f, -10.f, 10.f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(lightPos, lightPos + camera.getCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 lightSpace = lightProjection * lightView;
+    glm::vec3 lightColor = glm::vec3(1.0f);*/
+
+    // Model's shadow depth map
+    /*shaderManager->useShader(SHADER_DEPTH_MAP);
+    shaderManager->setCurrUniform("lightSpace", lightSpace);
+    for (auto& [_, m] : models) {
+        m.drawDepthMap(shaderManager->getCurrShader());
+    }*/
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void MainScene::renderColor() {
+    glBindFramebuffer(GL_FRAMEBUFFER, motionBlur.getColorFBO());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void MainScene::renderMotionBlur() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shaderManager->useShader(SHADER_MONTION_BULR);
+    motionBlur.renderMotionBlur(shaderManager->getCurrShader());
+}
+
+void MainScene::renderMosaic() {
+    glBindFramebuffer(GL_FRAMEBUFFER, mosaic.getMosaicFBO());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    shaderManager->useShader(SHADER_MOSAIC);
+    mosaic.renderMosaic(shaderManager->getCurrShader());
 }
 
 void MainScene::onResize(int width, int height) {

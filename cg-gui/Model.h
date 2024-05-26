@@ -11,9 +11,9 @@ private:
 
 	glm::vec3 center;
 	glm::mat4 transform, invTransform;
-	glm::mat4 modelMatrix;
+	glm::mat4 modelMatrix, prevModelMatrix;
 
-	std::vector<glm::vec2> offsets;
+	std::vector<glm::vec3> offsets;
 	int amount = 1;
 
 	std::unordered_map<std::string, Mesh> meshTable; // <name, index> to create child-parent meshes.
@@ -47,6 +47,7 @@ public:
 
 	/* Function */
 	void update(float dt);
+	void drawPrevVelocity(const Shader& shader);
 	void drawDepthMap(const Shader& shader);
 	void draw(const Shader& shader);
 

@@ -3,7 +3,7 @@
 ReflectionSphere::ReflectionSphere() {}
 
 void ReflectionSphere::init(float radius, int slices, int stacks) {
-    this->model = glm::mat4(1.f);
+    this->model = prevModel = glm::mat4(1.f);
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -53,7 +53,7 @@ void ReflectionSphere::init(float radius, int slices, int stacks) {
     glGenRenderbuffers(1, &captureRBO);
 
     glGenTextures(1, &envCubemap);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
     for (unsigned int i = 0; i < 6; ++i) {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, captureSize, captureSize, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
@@ -79,12 +79,32 @@ void ReflectionSphere::translate(float dx, float dy, float dz) {
     this->model = glm::translate(glm::mat4(1.f), glm::vec3(dx, dy, dz)) * model;
 }
 
+void ReflectionSphere::drawPrevVelocity(const Shader& shader) {
+    shader.setUniform("model", model);
+    shader.setUniform("prevModel", prevModel);
+    shader.setUniform("isInstanced", false);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+    unsigned int stride = (3 + 3 + 2) * sizeof(float);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+
+    glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+}
+
 void ReflectionSphere::draw(const Shader& shader) {
     shader.setUniform("model", model);
 
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-    shader.setUniform("skybox", 0);
+    shader.setUniform("skybox", 5);
 
     glBindVertexArray(VAO);
 
@@ -105,6 +125,8 @@ void ReflectionSphere::draw(const Shader& shader) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 
     glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+
+    prevModel = model;
 }
 
 const int& ReflectionSphere::getCaptureSize() {

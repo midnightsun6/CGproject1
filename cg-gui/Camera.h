@@ -34,8 +34,8 @@ private:
 	glm::vec3 cameraUp;
 	glm::vec3 cameraRight;
 
-	glm::mat4 projection;
-	glm::mat4 view;
+	glm::mat4 projection, prevProjection;
+	glm::mat4 view, prevView;
 
 	/* Functions */
 	void updateCameraMovement(CameraMovement cameraMovement);
@@ -55,6 +55,8 @@ public:
 	/* Getter and Setter */
 	const glm::vec3& getCameraPos() const;
 	const glm::vec3& getCameraFront() const;
+	const glm::mat4& getPrevProjectionMatrix() const;
+	const glm::mat4& getPrevViewMatrix() const;
 	const glm::mat4& getProjectionMatrix() const;
 	const glm::mat4& getViewMatrix() const;
 };

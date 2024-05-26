@@ -41,9 +41,6 @@
     <ClCompile Include="Animator.cpp">
       <Filter>Animation</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Particle</Filter>
-    </ClCompile>
     <ClCompile Include="Grass.cpp">
       <Filter>Object\Background</Filter>
     </ClCompile>
@@ -70,6 +67,15 @@
     </ClCompile>
     <ClCompile Include="ReflectionSphere.cpp">
       <Filter>Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Particle\Particle Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="MotionBlur.cpp">
+      <Filter>Particle\Screen Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Mosaic.cpp">
+      <Filter>Particle\Screen Effects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +145,18 @@
     <Filter Include="Shader\Reflection">
       <UniqueIdentifier>{bac8dbcd-88bc-4d49-8c93-f07942ca977d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Motion Blur">
+      <UniqueIdentifier>{97b2783a-4d34-4e9c-b25c-1a2a71c89df0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle\Screen Effects">
+      <UniqueIdentifier>{767faeec-335d-416e-b278-87c42091e3a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle\Particle Effects">
+      <UniqueIdentifier>{140c7ce3-b3f7-4f06-befd-392b6d19bb02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Mosaic">
+      <UniqueIdentifier>{3630a585-edad-4ad3-9e46-74f01936d5b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\App\App.h">
@@ -178,9 +196,6 @@
     <ClInclude Include="Animator.h">
       <Filter>Animation</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>Particle</Filter>
-    </ClInclude>
     <ClInclude Include="Grass.h">
       <Filter>Object\Background</Filter>
     </ClInclude>
@@ -207,6 +222,15 @@
     </ClInclude>
     <ClInclude Include="ReflectionSphere.h">
       <Filter>Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Particle\Particle Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="MotionBlur.h">
+      <Filter>Particle\Screen Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Mosaic.h">
+      <Filter>Particle\Screen Effects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -243,12 +267,6 @@
     <None Include="..\res\res\shaders\model_loading.vs.glsl">
       <Filter>Shader\Model</Filter>
     </None>
-    <None Include="..\res\res\shaders\model_loading_mosaic.fs.glsl">
-      <Filter>Shader\Model</Filter>
-    </None>
-    <None Include="..\res\res\shaders\model_loading_mosaic.vs.glsl">
-      <Filter>Shader\Model</Filter>
-    </None>
     <None Include="..\res\res\shaders\model_loading_toon.fs.glsl">
       <Filter>Shader\Model</Filter>
     </None>
@@ -275,6 +293,33 @@
     </None>
     <None Include="..\res\res\shaders\reflection.fs.glsl">
       <Filter>Shader\Reflection</Filter>
+    </None>
+    <None Include="..\res\res\shaders\velocity.fs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\velocity.vs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\motion_blur.fs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\motion_blur.vs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\velocity_particle.gs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\velocity_particle.vs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\velocity_particle.fs.glsl">
+      <Filter>Shader\Motion Blur</Filter>
+    </None>
+    <None Include="..\res\res\shaders\mosaic.vs.glsl">
+      <Filter>Shader\Mosaic</Filter>
+    </None>
+    <None Include="..\res\res\shaders\mosaic.fs.glsl">
+      <Filter>Shader\Mosaic</Filter>
     </None>
   </ItemGroup>
 </Project>

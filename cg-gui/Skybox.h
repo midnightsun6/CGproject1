@@ -15,6 +15,7 @@ private:
 public:
 	Skybox();
 
+	void drawPrevVelocity(const Shader& shader);
 	void draw(const Shader& shader);
 };
 

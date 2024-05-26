@@ -33,9 +33,10 @@ void Model::computeInstanceOffsets() {
 	int boundary = 2000;
 	for (int i = 0; i < boundary; i += 100) {
 		for (int j = 0; j < boundary; j += 100) {
-			glm::vec2 trans;
+			glm::vec3 trans;
 			trans.x = (float)i / 10.f + offset;
-			trans.y = (float)j / 10.f + offset;
+			trans.y = 0.f;
+			trans.z = (float)j / 10.f + offset;
 			offsets.push_back(trans);
 		}
 	}
@@ -320,16 +321,22 @@ void Model::update(float dt) {
 }
 
 Model::Model() {
-	modelMatrix = glm::mat4(1.f);
+	prevModelMatrix = modelMatrix = glm::mat4(1.f);
 }
 
 Model::Model(std::string& path) {
-	modelMatrix = glm::mat4(1.f);
+	prevModelMatrix = modelMatrix = glm::mat4(1.f);
 	this->loadModel(path);
 }
 
 void Model::setModel(const char* filename) {
 	this->loadModel(filename);
+}
+
+void Model::drawPrevVelocity(const Shader& shader) {
+	for (auto& mesh : meshes) {
+		mesh.drawPrevVelocity(shader, animator, modelMatrix, prevModelMatrix, offsets, amount);
+	}
 }
 
 void Model::drawDepthMap(const Shader& shader) {
@@ -342,6 +349,7 @@ void Model::draw(const Shader& shader) {
 	for (auto& mesh : meshes) {
 		mesh.draw(shader, animator, modelMatrix, offsets, amount);
 	}
+	this->prevModelMatrix = modelMatrix;
 }
 
 const std::vector<Mesh>& Model::getMeshes() const {

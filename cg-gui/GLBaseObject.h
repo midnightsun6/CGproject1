@@ -15,7 +15,7 @@ protected:
 	GLuint cVBOs;	// a color of buffer.
 	GLuint EBO;
 
-	glm::mat4 model;
+	glm::mat4 model, prevModel;
 
 public:
 	GLBaseObject();
@@ -31,6 +31,7 @@ public:
 	void rotate(float angle, float x, float y, float z);
 	void scale(float x, float y, float z);
 
+	void drawPrevVelocity(const Shader& shader);
 	virtual void draw(const Shader& shader);
 };
 
