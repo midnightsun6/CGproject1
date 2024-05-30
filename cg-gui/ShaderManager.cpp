@@ -23,6 +23,7 @@ void ShaderManager::init() {
         Shader("velocity_particle.vs.glsl", "velocity_particle.gs.glsl", "velocity_particle.fs.glsl"),
         Shader("motion_blur.vs.glsl", "motion_blur.fs.glsl"),
         Shader("mosaic.vs.glsl", "mosaic.fs.glsl"),
+        Shader("water.vs.glsl", "water.fs.glsl"),
     };
 }
 

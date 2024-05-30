@@ -30,6 +30,7 @@
 #include <stb\stb_image.h>
 
 #define MAX_BONE_INFLUENCE 4
+using uint = unsigned int;
 
 /*
     Texture ID
@@ -43,6 +44,9 @@
     Model: 9
     Model shadow map: 10
     Mosaic: 11
+    Water normal: 12
+    Water dudv: 13
+    Water reflection: 14
     Grass: 15, 16, 17
 */
 

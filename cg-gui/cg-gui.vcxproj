@@ -131,6 +131,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,6 +168,7 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Terrian.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\imgui\backends\imgui_impl_glfw.h" />
@@ -194,6 +196,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Terrian.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\res\shaders\cubemap.fs.glsl" />
@@ -211,6 +214,8 @@
     <None Include="..\res\res\shaders\motion_blur.vs.glsl" />
     <None Include="..\res\res\shaders\mosaic.fs.glsl" />
     <None Include="..\res\res\shaders\mosaic.vs.glsl" />
+    <None Include="..\res\res\shaders\water.fs.glsl" />
+    <None Include="..\res\res\shaders\water.vs.glsl" />
     <None Include="..\res\res\shaders\velocity_particle.fs.glsl" />
     <None Include="..\res\res\shaders\particle.fs.glsl" />
     <None Include="..\res\res\shaders\velocity_particle.gs.glsl" />

@@ -11,6 +11,7 @@
 #include "../../cg-gui/ReflectionSphere.h"
 #include "../../cg-gui/MotionBlur.h"
 #include "../../cg-gui/Mosaic.h"
+#include "../../cg-gui/Water.h"
 
 enum RenderType {
 	RENDER_TYPE_NORMAL,
@@ -38,6 +39,7 @@ private:
 	std::vector<GLBaseObject> spheres;
 
 	/* Object */
+	Water water;
 	ReflectionSphere mirror;
 	std::unordered_map<std::string, Model> models;
 
@@ -67,7 +69,8 @@ public:
 	/* Detail Render Functions */
 	void captureEnvironment();
 	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight);
-	void renderReflection();
+	void renderWaterReflection();
+	void renderReflectionSphere();
 	void renderVelocity();
 	void renderColor();
 	void renderMotionBlur();

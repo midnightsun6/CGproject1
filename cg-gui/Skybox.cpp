@@ -82,6 +82,10 @@ Skybox::Skybox() {
     this->loadTexture();
 }
 
+const GLuint& Skybox::getSkyboxTexture() const {
+    return this->cubemap;
+}
+
 void Skybox::drawPrevVelocity(const Shader& shader) {
     shader.setUniform("model", glm::mat4(1.f));
     shader.setUniform("prevModel", glm::mat4(1.f));

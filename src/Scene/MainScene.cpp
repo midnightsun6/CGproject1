@@ -18,6 +18,7 @@ bool MainScene::initialize() {
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_CLIP_DISTANCE0);
 
     // Init objects.
     grid.init(GL_LINES);
@@ -29,6 +30,7 @@ bool MainScene::initialize() {
     mirror.init(5.0, 100, 100);
     mirror.translate(0, 30, 0);
 
+
     //addSphere(2.0, 100, 100, glm::vec3(1.0, 0.2, 0.2));
 
     //particle = ParticleSystem(PARTICLE_TYPE_FOUNTAIN, 10.f, 50000);
@@ -38,6 +40,7 @@ bool MainScene::initialize() {
     //this->loadModel("Android Robot/AndroidBot.obj", "android");
     //this->loadModel("floor/Wood_Floor_001_OBJ.obj", "floor");
 
+    water.setWindowSize(this->screenWidth, this->screenHeight);
     motionBlur.setScreenSize(this->screenWidth, this->screenHeight);
     mosaic.setScreenSize(this->screenWidth, this->screenHeight);
 
@@ -59,12 +62,14 @@ void MainScene::update(double dt) {
     box.rotate(totalTime * angle, 0, 1, 0);
     box.translate(totalTime * speed, 0, 0);
 
+    water.update(dt);
+
     particle.emit(glm::vec3(0, 10, 0), glm::vec3(20, 0, 0), 1000);
     particle.update(dt);
 }
 
 void MainScene::render() {
-    RenderType type = RENDER_TYPE_MOSAIC;
+    RenderType type = RENDER_TYPE_NORMAL;
 
     switch (type) {
         case RENDER_TYPE_NORMAL:
@@ -74,9 +79,20 @@ void MainScene::render() {
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+            this->renderWaterReflection();
 
-            this->renderReflection();
+            this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
+            
+            // Water
+            shaderManager->useShader(SHADER_WATER);
+            shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+            shaderManager->setCurrUniform("view", camera.getViewMatrix());
+            shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
+            shaderManager->setCurrUniform("lightPos", glm::vec3(0.f, 50.f, 0.f));
+            shaderManager->setCurrUniform("lightColor", glm::vec3(1.0f));
+            water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());
+
+            this->renderReflectionSphere();
             break;
         }
         case RENDER_TYPE_MOSAIC:
@@ -110,6 +126,8 @@ void MainScene::render() {
 }
 
 void MainScene::captureEnvironment() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     const GLuint& captureFBO = mirror.getCaptureFBO();
     const GLuint& captureRBO = mirror.getCaptureRBO();
     const GLuint& envCubemap = mirror.getEnvCubemap();
@@ -136,6 +154,8 @@ void MainScene::captureEnvironment() {
 }
 
 void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     // Skybox
     shaderManager->useShader(SHADER_CUBEMAP);
     shaderManager->setCurrUniform("projection", projection);
@@ -146,7 +166,7 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     shaderManager->useShader(SHADER_TERRIAN);
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
-    terrian.draw(shaderManager->getCurrShader());
+    //terrian.draw(shaderManager->getCurrShader());
 
     // Grass
     shaderManager->useShader(SHADER_GRASS);
@@ -195,6 +215,14 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
         m.draw(shaderManager->getCurrShader());
     }
 
+    // Water
+    /*shaderManager->useShader(SHADER_WATER);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
+    shaderManager->setCurrUniform("lightPos", lightPos);
+    water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());*/
+
     // Fountain particle
     shaderManager->useShader(SHADER_PARTICLE_FOUNTAIN);
     shaderManager->setCurrUniform("projection", projection);
@@ -212,7 +240,25 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     }
 }
 
-void MainScene::renderReflection() {
+void MainScene::renderWaterReflection() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, water.getReflectionFBO());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    float waterHeight = 0.f;
+    glm::vec3 reflectPos = camera.getCameraPos();
+    reflectPos.y = 2 * waterHeight - camera.getCameraPos().y;
+    glm::vec3 reflectDir = camera.getCameraFront();
+    reflectDir.y *= -1;
+    glm::vec3 reflectUp = glm::vec3(0.f, 1.f, 0.f);
+    glm::mat4 reflectView = glm::lookAt(reflectPos, reflectPos + reflectDir, reflectUp);
+    this->renderScene(camera.getProjectionMatrix(), reflectView, this->screenWidth, this->screenHeight);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void MainScene::renderReflectionSphere() {
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Reflection Object
     shaderManager->useShader(SHADER_REFLECTION);
     shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
@@ -222,6 +268,7 @@ void MainScene::renderReflection() {
 }
 
 void MainScene::renderVelocity() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, motionBlur.getVelocityFBO());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -272,6 +319,7 @@ void MainScene::renderVelocity() {
 }
 
 void MainScene::renderColor() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, motionBlur.getColorFBO());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -281,18 +329,18 @@ void MainScene::renderColor() {
 }
 
 void MainScene::renderMotionBlur() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shaderManager->useShader(SHADER_MONTION_BULR);
     motionBlur.renderMotionBlur(shaderManager->getCurrShader());
 }
 
 void MainScene::renderMosaic() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, mosaic.getMosaicFBO());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     shaderManager->useShader(SHADER_MOSAIC);
@@ -303,6 +351,9 @@ void MainScene::onResize(int width, int height) {
     this->screenWidth = width;
     this->screenHeight = height;
     camera.updateWindowSize(width, height);
+    water.setWindowSize(this->screenWidth, this->screenHeight);
+    motionBlur.setScreenSize(this->screenWidth, this->screenHeight);
+    mosaic.setScreenSize(this->screenWidth, this->screenHeight);
     std::cout << "MainScene Resize: " << width << " " << height << std::endl;
 }
 

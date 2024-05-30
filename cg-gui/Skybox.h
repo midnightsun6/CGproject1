@@ -15,6 +15,8 @@ private:
 public:
 	Skybox();
 
+	const GLuint& getSkyboxTexture() const;
+
 	void drawPrevVelocity(const Shader& shader);
 	void draw(const Shader& shader);
 };

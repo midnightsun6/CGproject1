@@ -77,6 +77,9 @@
     <ClCompile Include="Mosaic.cpp">
       <Filter>Particle\Screen Effects</Filter>
     </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Object\Background</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -232,6 +235,9 @@
     <ClInclude Include="Mosaic.h">
       <Filter>Particle\Screen Effects</Filter>
     </ClInclude>
+    <ClInclude Include="Water.h">
+      <Filter>Object\Background</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\res\shaders\particle.gs.glsl">
@@ -320,6 +326,12 @@
     </None>
     <None Include="..\res\res\shaders\mosaic.fs.glsl">
       <Filter>Shader\Mosaic</Filter>
+    </None>
+    <None Include="..\res\res\shaders\water.fs.glsl">
+      <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\water.vs.glsl">
+      <Filter>Shader\Background</Filter>
     </None>
   </ItemGroup>
 </Project>

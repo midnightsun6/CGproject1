@@ -73,7 +73,7 @@ const GLuint& Mosaic::getMosaicTexture() const {
 }
 
 void Mosaic::renderMosaic(const Shader& shader) {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glActiveTexture(GL_TEXTURE11);
     glBindTexture(GL_TEXTURE_2D, textureID);
