@@ -163,6 +163,7 @@
     <ClCompile Include="Mosaic.cpp" />
     <ClCompile Include="MotionBlur.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PointLightCube.cpp" />
     <ClCompile Include="ReflectionSphere.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Mosaic.h" />
     <ClInclude Include="MotionBlur.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="PointLightCube.h" />
     <ClInclude Include="ReflectionSphere.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
@@ -201,12 +203,13 @@
   <ItemGroup>
     <None Include="..\res\res\shaders\cubemap.fs.glsl" />
     <None Include="..\res\res\shaders\cubemap.vs.glsl" />
-    <None Include="..\res\res\shaders\debugDepthShader.frag" />
-    <None Include="..\res\res\shaders\debugDepthShader.vert" />
-    <None Include="..\res\res\shaders\depth_map.fs.glsl" />
-    <None Include="..\res\res\shaders\depth_map.vs.glsl" />
+    <None Include="..\res\res\shaders\depth_cubemap.fs.glsl" />
+    <None Include="..\res\res\shaders\depth_cubemap.gs.glsl" />
+    <None Include="..\res\res\shaders\depth_cubemap.vs.glsl" />
     <None Include="..\res\res\shaders\grass.fs.glsl" />
     <None Include="..\res\res\shaders\grass.vs.glsl" />
+    <None Include="..\res\res\shaders\light_cube.fs.glsl" />
+    <None Include="..\res\res\shaders\light_cube.vs.glsl" />
     <None Include="..\res\res\shaders\model_loading.fs.glsl" />
     <None Include="..\res\res\shaders\model_loading.vs.glsl" />
     <None Include="..\res\res\shaders\model_loading_toon.fs.glsl" />

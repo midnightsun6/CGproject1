@@ -10,63 +10,78 @@ struct Material {
 in vec2 TexCoords;
 in vec3 Normal;
 in vec3 FragPos;
-in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
 
 uniform Material material;
-uniform vec3 lightPos; 
+uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform int hasTexture;
 
 uniform sampler2D texture_diffuse1;
-uniform sampler2D shadowMap;
+uniform samplerCube shadowMap;
 
-float calShadow(vec4 fragPosLightSpace, vec3 norm, vec3 lightDir) {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+uniform float farPlane;
 
-    if(projCoords.z > 1.0)
-        return 0.0;
+float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightDir)
+{
+    vec3 fragToLight = fragPos - lightPos;
+    float closestDepth = texture(shadowMap, fragToLight).r;
+    closestDepth *= farPlane;
 
-    float bias = max(0.005 * (1.0 - dot(norm, lightDir)), 0.005);
+    float currentDepth = length(fragToLight);
+    float bias = max(0.5f * (1.0f - dot(normal, lightDir)), 0.0005f);
 
+    int sampleRadius = 2;
+    float offset = 0.02f;
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -2; x <= 2; ++x) {
-        for(int y = -2; y <= 2; ++y) {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-            shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;        
-        }    
+    for (int z = -sampleRadius; z <= sampleRadius; z++)
+    {
+        for (int y = -sampleRadius; y <= sampleRadius; y++)
+        {
+            for (int x = -sampleRadius; x <= sampleRadius; x++)
+            {
+                float pcfDepth = texture(shadowMap, fragToLight + vec3(x, y, z) * offset).r * farPlane;
+                if (currentDepth > pcfDepth + bias)
+                    shadow += 1.0;
+            }
+        }
     }
-    shadow /= 25.0;
+    shadow /= pow((sampleRadius * 2 + 1), 3);
 
     return shadow;
 }
 
 void main()
-{    
-    vec3 ambient = material.ambient * lightColor;
-    
+{
+    vec3 lightVec = lightPos - FragPos;
+
+    float dist = length(lightVec);
+    float a = 0.0003f;
+    float b = 0.00002f;
+    float inten = 1.0f / (a * dist * dist + b * dist + 1.0f);
+
+    vec3 ambient = material.ambient * lightColor * 0.2f;
+
     vec3 norm = normalize(Normal);
-    vec3 lightDir = normalize(lightPos - FragPos);
+    vec3 lightDir = normalize(lightVec);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * material.diffuse * lightColor;
-    
+
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 halfwayDir = normalize(viewDir + lightDir);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
     vec3 specular = spec * material.specular * lightColor;
-    
-    float shadow = calShadow(FragPosLightSpace, norm, lightDir);
+
+    float shadow = calculateShadow(FragPos, norm, lightDir);
 
     vec3 result;
-    if(hasTexture > 0) {
+    if (hasTexture > 0) {
         vec3 textureColor = texture(texture_diffuse1, TexCoords).rgb;
-        result = (ambient + (1.0 - shadow) * (diffuse + specular)) * textureColor * 5;
+        result = (ambient + (1.0 - shadow) * inten * (diffuse + specular)) * textureColor;
     } else {
-        result = (ambient + (1.0 - shadow) * (diffuse + specular)) * 1;
+        result = ambient + (1.0 - shadow) * inten * (diffuse + specular);
     }
 
     FragColor = vec4(result, 1.0);

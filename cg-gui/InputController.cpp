@@ -23,6 +23,10 @@ void InputController::OnKeyboard(int key, int action) {
 			break;
 	}
 
+	if ('A' <= key && key <= 'Z') {
+		isKeyPress[key - 'A'] = isHeld;
+	}
+
 	switch (key) {
 		case GLFW_KEY_W:
 			isCameraMoveHeld[CameraMovement::FORWARD] = isHeld;
@@ -35,9 +39,6 @@ void InputController::OnKeyboard(int key, int action) {
 			break;
 		case GLFW_KEY_D:
 			isCameraMoveHeld[CameraMovement::RIGHTSIDE] = isHeld;
-			break;
-		case GLFW_KEY_Z:
-			isKeyPress['z' - 'a'] = isHeld;
 			break;
 		case GLFW_KEY_LEFT_SHIFT:
 			isCameraMoveHeld[CameraMovement::SPEED_UP] = isHeld;
@@ -100,5 +101,11 @@ bool InputController::getMouseHeld(MouseHeld mh) {
 }
 
 bool InputController::getKeyPress(char key) {
-	return isKeyPress[key - 'a'];
+	if (std::isupper(key)) {
+		return isKeyPress[key - 'A'];
+	}
+	else if (std::islower(key)) {
+		return isKeyPress[key - 'a'];
+	}
+	return false;
 }

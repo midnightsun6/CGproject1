@@ -36,10 +36,7 @@ private:
 	std::vector<Mesh> children;
 
 	GLuint VAO, VBO, EBO, insVBO;
-	GLuint depthMapFBO, depthMap;
 	glm::mat4 transform, invTransform;
-
-	GLuint SHADOW_WIDTH, SHADOW_HEIGHT;
 
 	unsigned int getWhiteTexture();
 	void setupMesh();

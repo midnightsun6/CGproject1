@@ -80,6 +80,9 @@
     <ClCompile Include="Water.cpp">
       <Filter>Object\Background</Filter>
     </ClCompile>
+    <ClCompile Include="PointLightCube.cpp">
+      <Filter>Object\Background</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="App">
@@ -130,9 +133,6 @@
     <Filter Include="Object\Model">
       <UniqueIdentifier>{5843ebe6-3c41-4983-9026-60fc162ff192}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Object\Shape">
-      <UniqueIdentifier>{09bdff54-f5b1-41f8-acbe-96b857f9926a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader\Shape">
       <UniqueIdentifier>{6ad5c5bb-7c71-462d-903c-58059ff6a612}</UniqueIdentifier>
     </Filter>
@@ -141,9 +141,6 @@
     </Filter>
     <Filter Include="Manager">
       <UniqueIdentifier>{5d6b4d03-b9da-4530-84fa-54c74721e79a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader\Depth Map">
-      <UniqueIdentifier>{ff296db7-ae70-4d6a-8b89-4b2b3f75799e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shader\Reflection">
       <UniqueIdentifier>{bac8dbcd-88bc-4d49-8c93-f07942ca977d}</UniqueIdentifier>
@@ -159,6 +156,12 @@
     </Filter>
     <Filter Include="Shader\Mosaic">
       <UniqueIdentifier>{3630a585-edad-4ad3-9e46-74f01936d5b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Object\Shape">
+      <UniqueIdentifier>{09bdff54-f5b1-41f8-acbe-96b857f9926a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\Shadow">
+      <UniqueIdentifier>{ff296db7-ae70-4d6a-8b89-4b2b3f75799e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +241,9 @@
     <ClInclude Include="Water.h">
       <Filter>Object\Background</Filter>
     </ClInclude>
+    <ClInclude Include="PointLightCube.h">
+      <Filter>Object\Background</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\res\res\shaders\particle.gs.glsl">
@@ -282,17 +288,11 @@
     <None Include="..\res\res\shaders\shader.fs.glsl">
       <Filter>Shader\Shape</Filter>
     </None>
-    <None Include="..\res\res\shaders\depth_map.vs.glsl">
-      <Filter>Shader\Depth Map</Filter>
+    <None Include="..\res\res\shaders\depth_cubemap.vs.glsl">
+      <Filter>Shader\Shadow</Filter>
     </None>
-    <None Include="..\res\res\shaders\depth_map.fs.glsl">
-      <Filter>Shader\Depth Map</Filter>
-    </None>
-    <None Include="..\res\res\shaders\debugDepthShader.frag">
-      <Filter>Shader\Depth Map</Filter>
-    </None>
-    <None Include="..\res\res\shaders\debugDepthShader.vert">
-      <Filter>Shader\Depth Map</Filter>
+    <None Include="..\res\res\shaders\depth_cubemap.fs.glsl">
+      <Filter>Shader\Shadow</Filter>
     </None>
     <None Include="..\res\res\shaders\reflection.vs.glsl">
       <Filter>Shader\Reflection</Filter>
@@ -332,6 +332,15 @@
     </None>
     <None Include="..\res\res\shaders\water.vs.glsl">
       <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\light_cube.fs.glsl">
+      <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\light_cube.vs.glsl">
+      <Filter>Shader\Background</Filter>
+    </None>
+    <None Include="..\res\res\shaders\depth_cubemap.gs.glsl">
+      <Filter>Shader\Shadow</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -42,7 +42,7 @@ using uint = unsigned int;
     Velocity: 7
     Color: 8
     Model: 9
-    Model shadow map: 10
+    Shadow map: 10
     Mosaic: 11
     Water normal: 12
     Water dudv: 13

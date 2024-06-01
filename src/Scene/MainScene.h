@@ -12,12 +12,12 @@
 #include "../../cg-gui/MotionBlur.h"
 #include "../../cg-gui/Mosaic.h"
 #include "../../cg-gui/Water.h"
+#include "../../cg-gui/PointLightCube.h"
 
 enum RenderType {
 	RENDER_TYPE_NORMAL,
 	RENDER_TYPE_MOSAIC,
 	RENDER_TYPE_MOTION_BLUR,
-	RENDER_TYPE_SHADOW,
 };
 
 class MainScene {
@@ -47,6 +47,7 @@ private:
 	ParticleSystem particle;
 	MotionBlur motionBlur;
 	Mosaic mosaic;
+	PointLightCube lightCube;
 
 	/* Shaders */
 	ShaderManager* shaderManager = ShaderManager::getInstance();
@@ -75,6 +76,7 @@ public:
 	void renderColor();
 	void renderMotionBlur();
 	void renderMosaic();
+	void renderShadowMap();
 
 	/* Callback functions */
 	void onResize(int width, int height);

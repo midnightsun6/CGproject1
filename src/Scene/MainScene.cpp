@@ -29,7 +29,7 @@ bool MainScene::initialize() {
 
     mirror.init(5.0, 100, 100);
     mirror.translate(0, 30, 0);
-
+    lightCube.setPosition(glm::vec3(0.f, 50.f, 10.f));
 
     //addSphere(2.0, 100, 100, glm::vec3(1.0, 0.2, 0.2));
 
@@ -66,6 +66,10 @@ void MainScene::update(double dt) {
 
     particle.emit(glm::vec3(0, 10, 0), glm::vec3(20, 0, 0), 1000);
     particle.update(dt);
+
+    if (input->getKeyPress('Z')) {
+        lightCube.setPosition(camera.getCameraPos());
+    }
 }
 
 void MainScene::render() {
@@ -78,9 +82,12 @@ void MainScene::render() {
 
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             this->renderWaterReflection();
 
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            this->renderShadowMap();
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
             
             // Water
@@ -88,8 +95,8 @@ void MainScene::render() {
             shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
             shaderManager->setCurrUniform("view", camera.getViewMatrix());
             shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
-            shaderManager->setCurrUniform("lightPos", glm::vec3(0.f, 50.f, 0.f));
-            shaderManager->setCurrUniform("lightColor", glm::vec3(1.0f));
+            shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
+            shaderManager->setCurrUniform("lightColor", lightCube.getColor());
             water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());
 
             this->renderReflectionSphere();
@@ -115,10 +122,6 @@ void MainScene::render() {
             this->renderColor();
             this->renderMotionBlur();
             break;
-        }
-        case RENDER_TYPE_SHADOW:
-        {
-
         }
         default:
             break;
@@ -154,8 +157,6 @@ void MainScene::captureEnvironment() {
 }
 
 void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
     // Skybox
     shaderManager->useShader(SHADER_CUBEMAP);
     shaderManager->setCurrUniform("projection", projection);
@@ -174,54 +175,23 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     shaderManager->setCurrUniform("view", view);
     grass.draw(shaderManager->getCurrShader());
 
-    // Model's light
-    float near_plane = 0.1f, far_plane = 20.0f;
-    glm::vec3 lightPos = camera.getCameraPos();
-    //glm::vec3 lightPos = glm::vec3(0.0f, 50.0f, 10.0f);
-    glm::mat4 lightProjection = glm::ortho(-35.f, 35.f, -35.f, 35.f, near_plane, far_plane);
-    glm::mat4 lightView = glm::lookAt(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // 固定方向
-    glm::mat4 lightSpace = lightProjection * lightView;
-    glm::vec3 lightColor = glm::vec3(1.0f);
-
-
-    /*float near_plane = 1.0f, far_plane = 20.0f;
-    glm::vec3 lightPos = camera.getCameraPos();
-    glm::mat4 lightProjection = glm::ortho(-10.f, 10.f, -10.f, 10.f, near_plane, far_plane);
-    glm::mat4 lightView = glm::lookAt(lightPos, lightPos + camera.getCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 lightSpace = lightProjection * lightView;
-    glm::vec3 lightColor = glm::vec3(1.0f);*/
-
-    // Model's shadow depth map
-    /*shaderManager->useShader(SHADER_DEPTH_MAP);
-    shaderManager->setCurrUniform("lightSpace", lightSpace);
-    for (auto& [_, m] : models) {
-        m.drawDepthMap(shaderManager->getCurrShader());
-    }*/
-
-    // Models
-    glViewport(0, 0, screenWidth, screenHeight);
+    // Model
     shaderManager->useShader(SHADER_MODEL);
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
-    shaderManager->setCurrUniform("screenWidth", screenWidth);
-    shaderManager->setCurrUniform("screenHeight", screenHeight);
 
     shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
-    shaderManager->setCurrUniform("lightPos", lightPos);
-    shaderManager->setCurrUniform("lightSpace", lightSpace);
-    shaderManager->setCurrUniform("lightColor", lightColor);
+    shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
+    shaderManager->setCurrUniform("lightColor", lightCube.getColor());
+    shaderManager->setCurrUniform("farPlane", lightCube.getFarPlane());
+
+    glActiveTexture(GL_TEXTURE10);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, lightCube.getDepthCubemap());
+    shaderManager->setCurrUniform("shadowMap", 10);
 
     for (auto& [_, m] : models) {
         m.draw(shaderManager->getCurrShader());
     }
-
-    // Water
-    /*shaderManager->useShader(SHADER_WATER);
-    shaderManager->setCurrUniform("projection", projection);
-    shaderManager->setCurrUniform("view", view);
-    shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
-    shaderManager->setCurrUniform("lightPos", lightPos);
-    water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());*/
 
     // Fountain particle
     shaderManager->useShader(SHADER_PARTICLE_FOUNTAIN);
@@ -238,6 +208,11 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     for (auto& obj : spheres) {
         //obj.draw(shaderManager->getCurrShader());
     }
+
+    shaderManager->useShader(SHADER_LIGHT_CUBE);
+    shaderManager->setCurrUniform("projection", projection);
+    shaderManager->setCurrUniform("view", view);
+    lightCube.draw(shaderManager->getCurrShader());
 }
 
 void MainScene::renderWaterReflection() {
@@ -258,7 +233,6 @@ void MainScene::renderWaterReflection() {
 }
 
 void MainScene::renderReflectionSphere() {
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Reflection Object
     shaderManager->useShader(SHADER_REFLECTION);
     shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
@@ -301,19 +275,8 @@ void MainScene::renderVelocity() {
 
     particle.drawPrevVelocity(shaderManager->getCurrShader());
 
-    /*float near_plane = 1.0f, far_plane = 20.0f;
-    glm::vec3 lightPos = camera.getCameraPos();
-    glm::mat4 lightProjection = glm::ortho(-10.f, 10.f, -10.f, 10.f, near_plane, far_plane);
-    glm::mat4 lightView = glm::lookAt(lightPos, lightPos + camera.getCameraFront(), glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::mat4 lightSpace = lightProjection * lightView;
-    glm::vec3 lightColor = glm::vec3(1.0f);*/
+    // Model
 
-    // Model's shadow depth map
-    /*shaderManager->useShader(SHADER_DEPTH_MAP);
-    shaderManager->setCurrUniform("lightSpace", lightSpace);
-    for (auto& [_, m] : models) {
-        m.drawDepthMap(shaderManager->getCurrShader());
-    }*/
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -345,6 +308,30 @@ void MainScene::renderMosaic() {
 
     shaderManager->useShader(SHADER_MOSAIC);
     mosaic.renderMosaic(shaderManager->getCurrShader());
+}
+
+void MainScene::renderShadowMap() {
+    glViewport(0, 0, lightCube.getShadowWidth(), lightCube.getShadowHeight());
+    glBindFramebuffer(GL_FRAMEBUFFER, lightCube.getDepthMapFBO());
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    std::vector<glm::mat4> shadowViews = lightCube.getViewMatrices();
+
+    shaderManager->useShader(SHADER_DEPTH_CUBEMAP);
+    shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
+    shaderManager->setCurrUniform("farPlane", lightCube.getFarPlane());
+    for (unsigned int i = 0; i < shadowViews.size(); ++i) {
+        shaderManager->setCurrUniform("shadowMatrices[" + std::to_string(i) + "]", shadowViews[i]);
+    }
+    
+
+    // Model's shadow depth map
+    for (auto& [_, m] : models) {
+        m.drawDepthMap(shaderManager->getCurrShader());
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, this->screenWidth, this->screenHeight);
 }
 
 void MainScene::onResize(int width, int height) {
