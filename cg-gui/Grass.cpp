@@ -36,6 +36,7 @@ Grass::Grass() {
     loadTexture();
 
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &velocityVAO);
     glBindVertexArray(VAO);
 
     glGenBuffers(1, &VBO);
@@ -117,7 +118,13 @@ void Grass::drawPrevVelocity(const Shader& shader) {
     shader.setUniform("prevModel", glm::mat4(1.f));
     shader.setUniform("isInstanced", true);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(velocityVAO);
+
+    for (int i = 0; i < 3; ++i) {
+        glActiveTexture(GL_TEXTURE15 + i);
+        glBindTexture(GL_TEXTURE_2D, grassTextures[i]);
+    }
+    shader.setUniform("texture1", 15);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
@@ -130,21 +137,12 @@ void Grass::drawPrevVelocity(const Shader& shader) {
     glVertexAttribDivisor(1, 1);
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glVertexAttribDivisor(2, 1);
-    glEnableVertexAttribArray(2);
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
     glDrawElementsInstanced(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0, grassNum);
 
     glBindVertexArray(0);
-    //glDisableVertexAttribArray(0);
-    //glDisableVertexAttribArray(1);
-    //glDisableVertexAttribArray(2);
 }
 
 void Grass::draw(const Shader& shader) {
@@ -181,6 +179,7 @@ void Grass::draw(const Shader& shader) {
     shader.setUniform("texture1", 15);
     
     glDrawElementsInstanced(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0, grassNum);
+    glBindVertexArray(0);
 
     glDisable(GL_BLEND);
 }

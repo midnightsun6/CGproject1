@@ -43,6 +43,8 @@ public:
 
 	/* Model Operation */
 	void resetMatrix();
+	void translate(float dx, float dy, float dz);
+	void scale(float dx, float dy, float dz);
 	void transformate(float tra[3], float rot[3], float sca[3]);
 
 	/* Function */
@@ -50,6 +52,11 @@ public:
 	void drawPrevVelocity(const Shader& shader);
 	void drawDepthMap(const Shader& shader);
 	void draw(const Shader& shader);
+	void drawParticlePrevVeloctiy(const Shader& shader);
+	void drawParticle(const Shader& shader);
+
+	/* Setter */
+	void setModelAmount(int amount);
 
 	/* Getter */
 	const std::vector<Mesh>& getMeshes() const;

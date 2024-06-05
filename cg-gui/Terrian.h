@@ -4,11 +4,11 @@
 
 class Terrian {
 private:
-	std::vector<float> vertices;
+	std::vector<float> vertices, velocityVertices;
 	std::vector<unsigned int> indices;
 	std::vector<glm::vec3> offsets;
 	GLuint texture;
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, velocityVAO, VBO, EBO;
 	GLuint insVBO;
 
 	void loadTexture();

@@ -20,6 +20,38 @@ uniform vec3 viewPos;
 uniform int hasTexture;
 
 uniform sampler2D texture_diffuse1;
+uniform samplerCube shadowMap;
+
+uniform float farPlane;
+
+float calculateShadow(vec3 fragPos, vec3 normal, vec3 lightDir)
+{
+    vec3 fragToLight = fragPos - lightPos;
+    float closestDepth = texture(shadowMap, fragToLight).r;
+    closestDepth *= farPlane;
+
+    float currentDepth = length(fragToLight);
+    float bias = max(0.5f * (1.0f - dot(normal, lightDir)), 0.0005f);
+
+    int sampleRadius = 2;
+    float offset = 0.02f;
+    float shadow = 0.0;
+    for (int z = -sampleRadius; z <= sampleRadius; z++)
+    {
+        for (int y = -sampleRadius; y <= sampleRadius; y++)
+        {
+            for (int x = -sampleRadius; x <= sampleRadius; x++)
+            {
+                float pcfDepth = texture(shadowMap, fragToLight + vec3(x, y, z) * offset).r * farPlane;
+                if (currentDepth > pcfDepth + bias)
+                    shadow += 1.0;
+            }
+        }
+    }
+    shadow /= pow((sampleRadius * 2 + 1), 3);
+
+    return shadow;
+}
 
 void main() {
     vec3 norm = normalize(Normal);
@@ -40,10 +72,12 @@ void main() {
     vec3 diffuse = material.diffuse * diff;
     vec3 specular = material.specular * spec;
 
-    vec3 color = ambient + intensity * (diffuse + specular);
+    float shadow = calculateShadow(FragPos, norm, lightDir);
+
+    vec3 color = ambient + intensity * (diffuse + specular) * (1.0 - shadow);
     vec3 result = color;
     if (hasTexture > 0) {
-        result *= texture(texture_diffuse1, TexCoords).rgb;
+        result *= texture(texture_diffuse1, TexCoords).rgb * (1.0 - shadow);
     }
 
     FragColor = vec4(result, 1.0);

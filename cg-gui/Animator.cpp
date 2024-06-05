@@ -3,11 +3,24 @@
 Animator::Animator() {
 	currTime = 0;
 	isPlaying = false;
+	isPlayParticle = false;
+
+	kamehameha = ParticleSystem(PARTICLE_TYPE_KAMEHAMEHA, 5, 2e5);
+	fire = ParticleSystem(PARTICLE_TYPE_FIRE, 20, 1e4);
 }
 
 Animator::~Animator() {}
 
 void Animator::update(float dt) {
+	if (currAnimation == "Kamehameha" && isPlayParticle) {
+		kamehameha.emit(glm::vec3(3, 13, 0), glm::vec3(20, 0, 0), 1000);
+		kamehameha.update(dt);
+	}
+	if (currAnimation == "Buu" && isPlayParticle) {
+		fire.emit(glm::vec3(3, 13, 3), glm::vec3(20, 0, 20), 1e4);
+		fire.update(dt);
+	}
+
 	if (!isPlaying) return;
 
 	if (animations.count(currAnimation)) {
@@ -15,6 +28,7 @@ void Animator::update(float dt) {
 
 		currTime += dt;
 		if (currTime > clip.duration / clip.speed) {
+			isPlayParticle = true;
 			isPlaying = clip.isLoop;
 			currTime = fmod(currTime, clip.duration / clip.speed);
 		}
@@ -145,6 +159,7 @@ void Animator::play(const char* animationName) {
 		currAnimation = animationName;
 		currTime = 0;
 		isPlaying = true;
+		isPlayParticle = false;
 	}
 }
 
@@ -153,6 +168,24 @@ void Animator::clear() {
 	this->currAnimation = "";
 	this->currTime = 0;
 	this->isPlaying = false;
+}
+
+void Animator::drawParticlePreVelocity(const Shader& shader) {
+	if (currAnimation == "Kamehameha") {
+		kamehameha.drawPrevVelocity(shader);
+	}
+	else if (currAnimation == "Buu") {
+		fire.drawPrevVelocity(shader);
+	}
+}
+
+void Animator::drawParticle(const Shader& shader) {
+	if (currAnimation == "Kamehameha") {
+		kamehameha.draw(shader);
+	}
+	else if (currAnimation == "Buu") {
+		fire.draw(shader);
+	}
 }
 
 const glm::mat4& Animator::getPrevAnimationMatrix(std::string part) {

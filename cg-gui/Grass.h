@@ -11,7 +11,7 @@ private:
 	std::vector<glm::vec3> offsets;
 	GLuint grassTextures[3];
 	std::string grass[3] = { "./res/terrian/Grass.png" , "./res/terrian/Large_Fern.png", "./res/terrian/Tall_Grass.png" };
-	GLuint VAO, VBO, VBOTextures, instanceVBO, EBO;
+	GLuint VAO, velocityVAO, VBO, VBOTextures, instanceVBO, EBO;
 	GLuint texture;
 	int grassNum = 10000;
 	int grassRangeX = 399, grassRangeZ = 399;

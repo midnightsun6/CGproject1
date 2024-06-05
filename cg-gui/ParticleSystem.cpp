@@ -230,4 +230,5 @@ void ParticleSystem::draw(const Shader& shader) {
 
     glDisable(GL_PROGRAM_POINT_SIZE);
     glDisable(GL_BLEND);
+    glBindVertexArray(0);
 }

@@ -27,40 +27,88 @@ namespace CG
 		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing);
 		ImGui::Begin("Control");
 		{
-			ImGui::Checkbox("Demo Window", &showDemoWindow);
+			/* Scene render type and object */
+			static std::vector<const char*> renderSceneParticle = {
+				"Normal", "Toon", "Mosaic", "Motion blur",
+			};
 
-			static int clicked = 0;
-			if (ImGui::Button("Button"))
-				clicked++;
-			if (clicked & 1)
-			{
-				ImGui::SameLine();
-				ImGui::Text("Thanks for clicking me!");
+			static std::vector<const char*> renderParticle = {
+				"Kamehameha", "Fire", "None",
+			};
+
+			static std::vector<const char*> renderReflection = {
+				"Mirror", "Water", "None",
+			};
+
+			static int renderSceneParticleIdx = 0;
+			static int renderParticleIdx = 2;
+			static int renderReflectionIdx = 2;
+			static int modelAmount = 1;
+			static float mosaicSize = 0.005, blurscale = 3.0;
+
+			ImGui::Combo("Scene Particle", &renderSceneParticleIdx, renderSceneParticle.data(), renderSceneParticle.size());
+			
+			if (renderSceneParticleIdx == 0 || renderSceneParticleIdx == 1) {
+				ImGui::Combo("Reflection Object", &renderReflectionIdx, renderReflection.data(), renderReflection.size());
+				ImGui::Combo("Particle", &renderParticleIdx, renderParticle.data(), renderParticle.size());
+				
+				targetScene->setRenderReflection((RenderReflection)renderReflectionIdx);
+				if (ImGui::Button("Play Particle")) {
+					targetScene->setRenderParticle((RenderParticle)renderParticleIdx);
+				}
+
+				ImGui::InputInt("Model Amount", &modelAmount, 1, 1000);
+				targetScene->setModelAmount(modelAmount);
+			}
+			else if (renderSceneParticleIdx == 2) {
+				ImGui::SliderFloat("Mosaic Block Size", &mosaicSize, 0.001, 1.0, "%.4f");
+				targetScene->setMosaicBlockSize(mosaicSize);
+			}
+			else if (renderSceneParticleIdx == 3) {
+				ImGui::SliderFloat("Blur Scale", &blurscale, 0.1, 20.0, "%.3f");
+				targetScene->setBlurScale(blurscale);
 			}
 
-			static int modeIndex = 0;
-			std::vector<std::string> modes = { "Fill", "Line" };
-			ImGui::Text("Mode: ");
-			ImGui::SameLine(100);
-			ImGui::SetNextItemWidth(150);
-			if (ImGui::BeginCombo("##Mode", modes[modeIndex].c_str()))
-			{
-				for (int n = 0; n < modes.size(); n++)
-				{
-					const bool is_selected = (modeIndex == n);
-					if (ImGui::Selectable(modes[n].c_str(), is_selected))
-					{
-						modeIndex = n;
-						std::cout << "Set Mode " << modeIndex << std::endl;
-					}
+			targetScene->setRenderSceneParticle((RenderSceneParticle)renderSceneParticleIdx);
+			
 
-					// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-					if (is_selected)
-					{
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndCombo();
+			/* ImGui default window */
+			{
+				//ImGui::Checkbox("Demo Window", &showDemoWindow);
+
+				//static int clicked = 0;
+				//if (ImGui::Button("Button"))
+				//	clicked++;
+				//if (clicked & 1)
+				//{
+				//	ImGui::SameLine();
+				//	ImGui::Text("Thanks for clicking me!");
+				//}
+
+				//static int modeIndex = 0;
+				//std::vector<std::string> modes = { "Fill", "Line" };
+				//ImGui::Text("Mode: ");
+				//ImGui::SameLine(100);
+				//ImGui::SetNextItemWidth(150);
+				//if (ImGui::BeginCombo("##Mode", modes[modeIndex].c_str()))
+				//{
+				//	for (int n = 0; n < modes.size(); n++)
+				//	{
+				//		const bool is_selected = (modeIndex == n);
+				//		if (ImGui::Selectable(modes[n].c_str(), is_selected))
+				//		{
+				//			modeIndex = n;
+				//			std::cout << "Set Mode " << modeIndex << std::endl;
+				//		}
+
+				//		// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				//		if (is_selected)
+				//		{
+				//			ImGui::SetItemDefaultFocus();
+				//		}
+				//	}
+				//	ImGui::EndCombo();
+				//}
 			}
 		}
 		ImGui::End();

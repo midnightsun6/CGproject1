@@ -273,10 +273,10 @@
     <None Include="..\res\res\shaders\terrian.vs.glsl">
       <Filter>Shader\Background</Filter>
     </None>
-    <None Include="..\res\res\shaders\model_loading.fs.glsl">
+    <None Include="..\res\res\shaders\model_loading_shadow.fs.glsl">
       <Filter>Shader\Model</Filter>
     </None>
-    <None Include="..\res\res\shaders\model_loading.vs.glsl">
+    <None Include="..\res\res\shaders\model_loading_shadow.vs.glsl">
       <Filter>Shader\Model</Filter>
     </None>
     <None Include="..\res\res\shaders\model_loading_toon.fs.glsl">

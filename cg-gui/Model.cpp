@@ -305,6 +305,16 @@ void Model::resetMatrix() {
 	modelMatrix = glm::mat4(1.f);
 }
 
+void Model::translate(float dx, float dy, float dz) {
+	glm::mat4 trans = glm::translate(glm::mat4(1.f), glm::vec3(dx, dy, dz));
+	modelMatrix = transform * trans * invTransform;
+}
+
+void Model::scale(float dx, float dy, float dz) {
+	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(dx, dy, dz));
+	modelMatrix = transform * scale * invTransform;
+}
+
 void Model::transformate(float tra[3], float rot[3], float sca[3]) {
 	glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(tra[0], tra[1], tra[2]));
 	glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(sca[0], sca[1], sca[2]));
@@ -350,6 +360,18 @@ void Model::draw(const Shader& shader) {
 		mesh.draw(shader, animator, modelMatrix, offsets, amount);
 	}
 	this->prevModelMatrix = modelMatrix;
+}
+
+void Model::drawParticlePrevVeloctiy(const Shader& shader) {
+	animator.drawParticlePreVelocity(shader);
+}
+
+void Model::drawParticle(const Shader& shader) {
+	animator.drawParticle(shader);
+}
+
+void Model::setModelAmount(int amount) {
+	this->amount = amount;
 }
 
 const std::vector<Mesh>& Model::getMeshes() const {

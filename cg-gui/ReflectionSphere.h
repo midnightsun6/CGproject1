@@ -3,7 +3,7 @@
 
 class ReflectionSphere {
 private:
-    GLuint VAO, VBO, EBO;
+    GLuint VAO, velocityVAO, VBO, EBO;
     GLuint captureFBO, captureRBO, envCubemap;
     int captureSize = 1024;
 

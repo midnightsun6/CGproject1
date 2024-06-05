@@ -35,7 +35,7 @@ private:
 	std::vector<Texture> textures;
 	std::vector<Mesh> children;
 
-	GLuint VAO, VBO, EBO, insVBO;
+	GLuint VAO, shadowVAO, velocityVAO,VBO, EBO, insVBO;
 	glm::mat4 transform, invTransform;
 
 	unsigned int getWhiteTexture();

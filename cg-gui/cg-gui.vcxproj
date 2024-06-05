@@ -210,8 +210,8 @@
     <None Include="..\res\res\shaders\grass.vs.glsl" />
     <None Include="..\res\res\shaders\light_cube.fs.glsl" />
     <None Include="..\res\res\shaders\light_cube.vs.glsl" />
-    <None Include="..\res\res\shaders\model_loading.fs.glsl" />
-    <None Include="..\res\res\shaders\model_loading.vs.glsl" />
+    <None Include="..\res\res\shaders\model_loading_shadow.fs.glsl" />
+    <None Include="..\res\res\shaders\model_loading_shadow.vs.glsl" />
     <None Include="..\res\res\shaders\model_loading_toon.fs.glsl" />
     <None Include="..\res\res\shaders\motion_blur.fs.glsl" />
     <None Include="..\res\res\shaders\motion_blur.vs.glsl" />

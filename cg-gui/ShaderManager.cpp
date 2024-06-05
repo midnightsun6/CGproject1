@@ -11,8 +11,8 @@ ShaderManager* ShaderManager::getInstance() {
 void ShaderManager::init() {
     this->shaders = {
         Shader("shader.vs.glsl", "shader.fs.glsl"),
-        Shader("model_loading.vs.glsl", "model_loading.fs.glsl"),
-        Shader("model_loading.vs.glsl", "model_loading_toon.fs.glsl"),
+        Shader("model_loading_shadow.vs.glsl", "model_loading_shadow.fs.glsl"),
+        Shader("model_loading_shadow.vs.glsl", "model_loading_toon.fs.glsl"),
         Shader("cubemap.vs.glsl", "cubemap.fs.glsl"),
         Shader("terrian.vs.glsl", "terrian.fs.glsl"),
         Shader("grass.vs.glsl", "grass.fs.glsl"),

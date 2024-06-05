@@ -15,6 +15,10 @@ bool MainScene::initialize() {
 
     shaderManager->init();
 
+    this->renderSceneParticle = RENDER_SCENE_NORMAL;
+    this->renderParticle = RENDER_PARTICLE_NONE;
+    this->renderReflection = RENDER_REFELCTION_NONE;
+
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
@@ -34,11 +38,34 @@ bool MainScene::initialize() {
     //addSphere(2.0, 100, 100, glm::vec3(1.0, 0.2, 0.2));
 
     //particle = ParticleSystem(PARTICLE_TYPE_FOUNTAIN, 10.f, 50000);
-    particle = ParticleSystem(PARTICLE_TYPE_KAMEHAMEHA, 5, 1e5);
+    //particle = ParticleSystem(PARTICLE_TYPE_KAMEHAMEHA, 5, 1e5);
     //particle.loadTexuture("kamehameha1.png");
 
-    //this->loadModel("Android Robot/AndroidBot.obj", "android");
-    //this->loadModel("floor/Wood_Floor_001_OBJ.obj", "floor");
+    /* Loading model and animations */
+    std::cout << "Loading Model: AndroidBot.obj...\n";
+    this->loadModel("Android Robot/AndroidBot.obj", "Android");
+    std::cout << "Loading Successfully\n";
+
+    std::cout << "Loading Animation: Kamehameha.objani...\n";
+    this->importAnimation("Android", "Kamehameha.objani");
+    std::cout << "Loading Successfully\n";
+
+    std::cout << "Loading Animation: Buu.objani...\n";
+    this->importAnimation("Android", "Buu.objani");
+    std::cout << "Loading Successfully\n";
+
+    std::cout << "Loading Animation: Empty.objani...\n";
+    this->importAnimation("Android", "Empty.objani");
+    std::cout << "Loading Successfully\n";
+
+    /* Loading floor */
+    std::cout << "Loading Model: Floor.obj...\n";
+    this->loadModel("floor/Floor.obj", "Floor");
+    std::cout << "Loading Successfully\n";
+
+    models["Android"].translate(0.f, 1.f, 0.f);
+    models["Floor"].translate(0.f, 10.f, 0.f);
+    models["Floor"].scale(5.f, 1.f, 5.f);
 
     water.setWindowSize(this->screenWidth, this->screenHeight);
     motionBlur.setScreenSize(this->screenWidth, this->screenHeight);
@@ -64,8 +91,8 @@ void MainScene::update(double dt) {
 
     water.update(dt);
 
-    particle.emit(glm::vec3(0, 10, 0), glm::vec3(20, 0, 0), 1000);
-    particle.update(dt);
+    /*particle.emit(glm::vec3(0, 10, 0), glm::vec3(20, 0, 0), 1000);
+    particle.update(dt);*/
 
     if (input->getKeyPress('Z')) {
         lightCube.setPosition(camera.getCameraPos());
@@ -73,54 +100,67 @@ void MainScene::update(double dt) {
 }
 
 void MainScene::render() {
-    RenderType type = RENDER_TYPE_NORMAL;
+    // 1. Render reflection object of reflection texture
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    switch (type) {
-        case RENDER_TYPE_NORMAL:
+    switch (this->renderReflection) {
+        case RENDER_REFLECTION_MIRROR:
         {
             this->captureEnvironment();
-
-            glClearColor(0, 0, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            break;
+        }
+        case RENDER_REFLECTION_WATER:
+        {
             this->renderWaterReflection();
+            break;
+        }
+        default:
+            break;
+    }
 
+    // 2. Render scene with scene particle
+    switch (this->renderSceneParticle) {
+        case RENDER_SCENE_NORMAL: case RENDER_SCENE_TOON:
+        {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             this->renderShadowMap();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
-            
-            // Water
-            shaderManager->useShader(SHADER_WATER);
-            shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
-            shaderManager->setCurrUniform("view", camera.getViewMatrix());
-            shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
-            shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
-            shaderManager->setCurrUniform("lightColor", lightCube.getColor());
-            water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());
-
-            this->renderReflectionSphere();
             break;
         }
-        case RENDER_TYPE_MOSAIC:
+        case RENDER_SCENE_MOSAIC:
         {
-            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             this->renderMosaic();
             break;
         }
-        case RENDER_TYPE_MOTION_BLUR:
+        case RENDER_SCENE_MOTION_BLUR:
         {
             this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
             this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight);
 
-            glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             this->renderVelocity();
             this->renderColor();
             this->renderMotionBlur();
+            break;
+        }
+        default:
+            break;
+    }
+
+    // 3. Render reflection object
+    switch (this->renderReflection) {
+        case RENDER_REFLECTION_MIRROR:
+        {
+            this->renderReflectionSphere();
+            break;
+        }
+        case RENDER_REFLECTION_WATER:
+        {
+            this->renderWater();
             break;
         }
         default:
@@ -164,10 +204,12 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     skybox.draw(shaderManager->getCurrShader());
 
     // Terrian
-    shaderManager->useShader(SHADER_TERRIAN);
-    shaderManager->setCurrUniform("projection", projection);
-    shaderManager->setCurrUniform("view", view);
-    //terrian.draw(shaderManager->getCurrShader());
+    if (this->renderReflection != RENDER_REFLECTION_WATER) {
+        shaderManager->useShader(SHADER_TERRIAN);
+        shaderManager->setCurrUniform("projection", projection);
+        shaderManager->setCurrUniform("view", view);
+        terrian.draw(shaderManager->getCurrShader());
+    }
 
     // Grass
     shaderManager->useShader(SHADER_GRASS);
@@ -176,7 +218,12 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     grass.draw(shaderManager->getCurrShader());
 
     // Model
-    shaderManager->useShader(SHADER_MODEL);
+    if (this->renderSceneParticle == RENDER_SCENE_TOON) {
+        shaderManager->useShader(SHADER_MODEL_TOON);
+    }
+    else {
+        shaderManager->useShader(SHADER_MODEL_SHADOW);
+    }
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
 
@@ -188,16 +235,18 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     glActiveTexture(GL_TEXTURE10);
     glBindTexture(GL_TEXTURE_CUBE_MAP, lightCube.getDepthCubemap());
     shaderManager->setCurrUniform("shadowMap", 10);
-
     for (auto& [_, m] : models) {
         m.draw(shaderManager->getCurrShader());
     }
 
-    // Fountain particle
-    shaderManager->useShader(SHADER_PARTICLE_FOUNTAIN);
+    // Particle
+    shaderManager->useShader(SHADER_PARTICLE);
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
-    particle.draw(shaderManager->getCurrShader());
+    //particle.draw(shaderManager->getCurrShader());
+    for (auto& [_, m] : models) {
+        m.drawParticle(shaderManager->getCurrShader());
+    }
 
     // BaseObjects
     shaderManager->useShader(SHADER_BASE_SHAPE);
@@ -241,10 +290,22 @@ void MainScene::renderReflectionSphere() {
     mirror.draw(shaderManager->getCurrShader());
 }
 
+void MainScene::renderWater() {
+    // Water
+    shaderManager->useShader(SHADER_WATER);
+    shaderManager->setCurrUniform("projection", camera.getProjectionMatrix());
+    shaderManager->setCurrUniform("view", camera.getViewMatrix());
+    shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
+    shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
+    shaderManager->setCurrUniform("lightColor", lightCube.getColor());
+    water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());
+}
+
 void MainScene::renderVelocity() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, motionBlur.getVelocityFBO());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, screenWidth, screenHeight);
 
     glm::mat4 projection = camera.getProjectionMatrix();
     glm::mat4 view = camera.getViewMatrix();
@@ -257,11 +318,9 @@ void MainScene::renderVelocity() {
     shaderManager->setCurrUniform("view", view);
     shaderManager->setCurrUniform("prevProjection", prevProjection);
     shaderManager->setCurrUniform("prevView", prevView);
-
     skybox.drawPrevVelocity(shaderManager->getCurrShader());
-    //terrian.drawPrevVelocity(shaderManager->getCurrShader());
-    //grass.drawPrevVelocity(shaderManager->getCurrShader());
-    glViewport(0, 0, screenWidth, screenHeight);
+    terrian.drawPrevVelocity(shaderManager->getCurrShader());
+    grass.drawPrevVelocity(shaderManager->getCurrShader());
     for (auto& [_, m] : models) {
         m.drawPrevVelocity(shaderManager->getCurrShader());
     }
@@ -272,8 +331,10 @@ void MainScene::renderVelocity() {
     shaderManager->setCurrUniform("view", view);
     shaderManager->setCurrUniform("prevProjection", prevProjection);
     shaderManager->setCurrUniform("prevView", prevView);
-
-    particle.drawPrevVelocity(shaderManager->getCurrShader());
+    //particle.drawPrevVelocity(shaderManager->getCurrShader());
+    for (auto& [_, m] : models) {
+        m.drawParticlePrevVeloctiy(shaderManager->getCurrShader());
+    }
 
     // Model
 
@@ -313,7 +374,7 @@ void MainScene::renderMosaic() {
 void MainScene::renderShadowMap() {
     glViewport(0, 0, lightCube.getShadowWidth(), lightCube.getShadowHeight());
     glBindFramebuffer(GL_FRAMEBUFFER, lightCube.getDepthMapFBO());
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     std::vector<glm::mat4> shadowViews = lightCube.getViewMatrices();
 
@@ -499,4 +560,44 @@ void MainScene::addSphere(float radius, int slices, int stacks, glm::vec3 color)
 
     spheres.push_back(sphere);
     std::cout << "Add sphere\n";
+}
+
+void MainScene::setRenderSceneParticle(RenderSceneParticle rs) {
+    this->renderSceneParticle = rs;
+}
+
+void MainScene::setRenderParticle(RenderParticle rp) {
+    this->renderParticle = rp;
+
+    switch (renderParticle) {
+        case RENDER_PARTICLE_KAMEHAMEHA:
+            this->playAnimation("Android", "Kamehameha");
+            break;
+        case RENDER_PARTICLE_FIRE:
+            this->playAnimation("Android", "Buu");
+            break;
+        case RENDER_PARTICLE_NONE:
+            this->playAnimation("Android", "Empty");
+            break;
+        default:
+            break;
+    }
+}
+
+void MainScene::setRenderReflection(RenderReflection rr) {
+    this->renderReflection = rr;
+}
+
+void MainScene::setModelAmount(int amount) {
+    if (models.count("Android")) {
+        models["Android"].setModelAmount(amount);
+    }
+}
+
+void MainScene::setMosaicBlockSize(float blockSize) {
+    this->mosaic.setBlockSize(blockSize);
+}
+
+void MainScene::setBlurScale(float blurscale) {
+    this->motionBlur.setBlurScale(blurscale);
 }

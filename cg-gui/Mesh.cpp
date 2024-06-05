@@ -14,6 +14,8 @@ unsigned int Mesh::getWhiteTexture() {
 }
 
 void Mesh::setupMesh() {
+	glGenVertexArrays(1, &shadowVAO);
+	glGenVertexArrays(1, &velocityVAO);
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
@@ -115,7 +117,7 @@ void Mesh::drawDepthMap(const Shader& shader, Animator& animator, const glm::mat
 		child.drawDepthMap(shader, animator, model, offsets, amount);
 	}
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(shadowVAO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
@@ -146,16 +148,16 @@ void Mesh::drawPrevVelocity(const Shader& shader, Animator& animator, const glm:
 
 	shader.setUniform("model", model);
 	shader.setUniform("prevModel", prevModel);
-	shader.setUniform("isInstanced", false);
+	shader.setUniform("isInstanced", true);
 
-	glBindVertexArray(VAO);
+	glBindVertexArray(velocityVAO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
@@ -163,12 +165,6 @@ void Mesh::drawPrevVelocity(const Shader& shader, Animator& animator, const glm:
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glVertexAttribDivisor(1, 1);
 	glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, insVBO);
-	glBufferData(GL_ARRAY_BUFFER, std::min(amount, (int)offsets.size()) * sizeof(glm::vec3), &offsets[0], GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glVertexAttribDivisor(2, 1);
-	glEnableVertexAttribArray(2);
 
 	glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, std::min(amount, (int)offsets.size()));
 	glBindVertexArray(0);

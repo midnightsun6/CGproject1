@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Definition.h"
+#include "ParticleSystem.h"
 
 struct KeyFrame {
 	float time;
@@ -93,7 +94,8 @@ struct AnimationClip {
 class Animator {
 private:
 	float currTime;
-	bool isPlaying;
+	bool isPlaying, isPlayParticle;
+	ParticleSystem kamehameha, fire;
 
 	std::string currAnimation;
 	std::unordered_map<std::string, glm::mat4> prevAnimationMatrix;
@@ -108,6 +110,8 @@ public:
 	void update(float dt);
 	void play(const char* animationName);
 	void clear();
+	void drawParticlePreVelocity(const Shader& shader);
+	void drawParticle(const Shader& shader);
 
 	/* Animations */
 	void addAnimation(AnimationClip animation);

@@ -127,4 +127,5 @@ void Skybox::draw(const Shader& shader) {
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
     glDepthMask(GL_TRUE);
+    glBindVertexArray(0);
 }

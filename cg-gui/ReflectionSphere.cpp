@@ -6,6 +6,7 @@ void ReflectionSphere::init(float radius, int slices, int stacks) {
     this->model = prevModel = glm::mat4(1.f);
 
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &velocityVAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
@@ -84,7 +85,7 @@ void ReflectionSphere::drawPrevVelocity(const Shader& shader) {
     shader.setUniform("prevModel", prevModel);
     shader.setUniform("isInstanced", false);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(velocityVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
@@ -97,6 +98,7 @@ void ReflectionSphere::drawPrevVelocity(const Shader& shader) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 
     glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void ReflectionSphere::draw(const Shader& shader) {
@@ -125,6 +127,7 @@ void ReflectionSphere::draw(const Shader& shader) {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
 
     glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
     prevModel = model;
 }

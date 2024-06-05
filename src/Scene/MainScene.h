@@ -14,10 +14,23 @@
 #include "../../cg-gui/Water.h"
 #include "../../cg-gui/PointLightCube.h"
 
-enum RenderType {
-	RENDER_TYPE_NORMAL,
-	RENDER_TYPE_MOSAIC,
-	RENDER_TYPE_MOTION_BLUR,
+enum RenderSceneParticle {
+	RENDER_SCENE_NORMAL,
+	RENDER_SCENE_TOON,
+	RENDER_SCENE_MOSAIC,
+	RENDER_SCENE_MOTION_BLUR,
+};
+
+enum RenderParticle {
+	RENDER_PARTICLE_KAMEHAMEHA,
+	RENDER_PARTICLE_FIRE,
+	RENDER_PARTICLE_NONE
+};
+
+enum RenderReflection {
+	RENDER_REFLECTION_MIRROR,
+	RENDER_REFLECTION_WATER,
+	RENDER_REFELCTION_NONE,
 };
 
 class MainScene {
@@ -26,6 +39,10 @@ private:
 
 	int screenWidth = 1280;
 	int screenHeight = 760;
+
+	RenderSceneParticle renderSceneParticle;
+	RenderParticle renderParticle;
+	RenderReflection renderReflection;
 
 	Camera camera;
 
@@ -72,6 +89,7 @@ public:
 	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight);
 	void renderWaterReflection();
 	void renderReflectionSphere();
+	void renderWater();
 	void renderVelocity();
 	void renderColor();
 	void renderMotionBlur();
@@ -87,6 +105,14 @@ public:
 	void addSphere(float radius, int slices, int stacks, glm::vec3 color);
 
 	/* OpenGL Model functions */
+	void setRenderSceneParticle(RenderSceneParticle rs);
+	void setRenderParticle(RenderParticle rp);
+	void setRenderReflection(RenderReflection rr);
+
+	void setModelAmount(int amount);
+	void setMosaicBlockSize(float blockSize);
+	void setBlurScale(float blurscale);
+
 	void loadModel(const char* path, const char* name);
 	void transformateModel(const char* objname, float translate[3], float rotation[3], float scale[3]);
 	void importAnimation(const char* name, const char* path);
