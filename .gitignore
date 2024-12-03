@@ -1,3 +1,4 @@
 .vs
 cg-gui/x64
 build/
+.vscode/

@@ -37,12 +37,12 @@ namespace CG
 			};
 
 			static std::vector<const char*> renderReflection = {
-				"Mirror", "Water", "None",
+				"Mirror", "Water(sin wave)", "Water(height map)", "None",
 			};
 
 			static int renderSceneParticleIdx = 0;
 			static int renderParticleIdx = 2;
-			static int renderReflectionIdx = 2;
+			static int renderReflectionIdx = 3;
 			static int modelAmount = 1;
 			static float mosaicSize = 0.005, blurscale = 3.0;
 

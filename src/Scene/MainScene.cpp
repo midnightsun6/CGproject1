@@ -1,6 +1,13 @@
 ﻿#include "MainScene.h"
 
-MainScene::MainScene() {
+bool MainScene::isRenderWater()
+{
+    return this->renderReflection == RENDER_REFLECTION_WATER_SIN_WAVE 
+    || this->renderReflection == RENDER_REFLECTION_WATER_HEIGHT_MAP;
+}
+
+MainScene::MainScene()
+{
     totalTime = 0;
 }
 
@@ -41,31 +48,31 @@ bool MainScene::initialize() {
     //particle = ParticleSystem(PARTICLE_TYPE_KAMEHAMEHA, 5, 1e5);
     //particle.loadTexuture("kamehameha1.png");
 
-    /* Loading model and animations */
-    std::cout << "Loading Model: AndroidBot.obj...\n";
-    this->loadModel("Android Robot/AndroidBot.obj", "Android");
-    std::cout << "Loading Successfully\n";
+    ///* Loading model and animations */
+    //std::cout << "Loading Model: AndroidBot.obj...\n";
+    //this->loadModel("Android Robot/AndroidBot.obj", "Android");
+    //std::cout << "Loading Successfully\n";
 
-    std::cout << "Loading Animation: Kamehameha.objani...\n";
-    this->importAnimation("Android", "Kamehameha.objani");
-    std::cout << "Loading Successfully\n";
+    //std::cout << "Loading Animation: Kamehameha.objani...\n";
+    //this->importAnimation("Android", "Kamehameha.objani");
+    //std::cout << "Loading Successfully\n";
 
-    std::cout << "Loading Animation: Buu.objani...\n";
-    this->importAnimation("Android", "Buu.objani");
-    std::cout << "Loading Successfully\n";
+    //std::cout << "Loading Animation: Buu.objani...\n";
+    //this->importAnimation("Android", "Buu.objani");
+    //std::cout << "Loading Successfully\n";
 
-    std::cout << "Loading Animation: Empty.objani...\n";
-    this->importAnimation("Android", "Empty.objani");
-    std::cout << "Loading Successfully\n";
+    //std::cout << "Loading Animation: Empty.objani...\n";
+    //this->importAnimation("Android", "Empty.objani");
+    //std::cout << "Loading Successfully\n";
 
-    /* Loading floor */
-    std::cout << "Loading Model: Floor.obj...\n";
-    this->loadModel("floor/Floor.obj", "Floor");
-    std::cout << "Loading Successfully\n";
+    ///* Loading floor */
+    //std::cout << "Loading Model: Floor.obj...\n";
+    //this->loadModel("floor/Floor.obj", "Floor");
+    //std::cout << "Loading Successfully\n";
 
-    models["Android"].translate(0.f, 1.f, 0.f);
+    /*models["Android"].translate(0.f, 1.f, 0.f);
     models["Floor"].translate(0.f, 10.f, 0.f);
-    models["Floor"].scale(5.f, 1.f, 5.f);
+    models["Floor"].scale(5.f, 1.f, 5.f);*/
 
     water.setWindowSize(this->screenWidth, this->screenHeight);
     motionBlur.setScreenSize(this->screenWidth, this->screenHeight);
@@ -95,13 +102,18 @@ void MainScene::update(double dt) {
     particle.update(dt);*/
 
     if (input->getKeyPress('Z')) {
-        lightCube.setPosition(camera.getCameraPos());
+        glm::vec3 pos = camera.getCameraFront();
+        pos *= 3;
+        pos += camera.getCameraPos();
+        //pos.y -= 3.0f;
+        lightCube.setPosition(pos);
     }
 }
 
 void MainScene::render() {
     // 1. Render reflection object of reflection texture
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, this->screenWidth, this->screenHeight);
 
     switch (this->renderReflection) {
         case RENDER_REFLECTION_MIRROR:
@@ -109,7 +121,7 @@ void MainScene::render() {
             this->captureEnvironment();
             break;
         }
-        case RENDER_REFLECTION_WATER:
+        case RENDER_REFLECTION_WATER_SIN_WAVE: case RENDER_REFLECTION_WATER_HEIGHT_MAP:
         {
             this->renderWaterReflection();
             break;
@@ -158,7 +170,7 @@ void MainScene::render() {
             this->renderReflectionSphere();
             break;
         }
-        case RENDER_REFLECTION_WATER:
+        case RENDER_REFLECTION_WATER_SIN_WAVE: case RENDER_REFLECTION_WATER_HEIGHT_MAP:
         {
             this->renderWater();
             break;
@@ -204,7 +216,7 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     skybox.draw(shaderManager->getCurrShader());
 
     // Terrian
-    if (this->renderReflection != RENDER_REFLECTION_WATER) {
+    if (!isRenderWater()) {
         shaderManager->useShader(SHADER_TERRIAN);
         shaderManager->setCurrUniform("projection", projection);
         shaderManager->setCurrUniform("view", view);
@@ -298,6 +310,7 @@ void MainScene::renderWater() {
     shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
     shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
     shaderManager->setCurrUniform("lightColor", lightCube.getColor());
+    shaderManager->setCurrUniform("isHeightMap", (bool)(this->renderReflection == RENDER_REFLECTION_WATER_HEIGHT_MAP));
     water.draw(shaderManager->getCurrShader(), skybox.getSkyboxTexture());
 }
 

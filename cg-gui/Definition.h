@@ -48,6 +48,7 @@ using uint = unsigned int;
     Water dudv: 13
     Water reflection: 14
     Grass: 15, 16, 17
+    Water HeightMap: 18
 */
 
 

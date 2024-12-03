@@ -1,10 +1,12 @@
 #include "Water.h"
 
 void Water::loadTexture() {
-    textureID.resize(2);
+    textureID.resize(3);
+    std::vector<int> ID = {12, 13, 18};
     std::vector<std::string> paths = { 
         "./res/background/water_normal_map2.jpg", 
-        "./res/background/water_dudv_map.jpg" 
+        "./res/background/water_dudv_map.jpg",
+        "./res/background/water_height_map.jpg"
     };
 
     for (int i = 0; i < textureID.size(); i++) {
@@ -24,7 +26,7 @@ void Water::loadTexture() {
             else if (nrChannels == 4)
                 format = GL_RGBA;
 
-            glActiveTexture(GL_TEXTURE12 + i);
+            glActiveTexture(GL_TEXTURE0 + ID[i]);
             glBindTexture(GL_TEXTURE_2D, texture);
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
@@ -43,31 +45,36 @@ void Water::loadTexture() {
 
 void Water::loadVertices() {
     float size = 200.0f;
-    vertices = {
-        // positions         // normals         // texCoords
-        -size,  0.0f, -size,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
-         size,  0.0f, -size,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
-         size,  0.0f,  size,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
-        -size,  0.0f,  size,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f
-    };
+    int gridCount = 100;
+    float step = size * 2 / gridCount;
 
-    indices = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    float offset = 1.0f;
-    int boundary = 2000;
-    /*for (int i = -boundary; i < boundary; i += 10) {
-        for (int j = -boundary; j < boundary; j += 10) {
-            glm::vec3 trans;
-            trans.x = (float)i / 10.f + offset;
-            trans.y = 0.f;
-            trans.z = (float)j / 10.f + offset;
-            offsets.push_back(trans);
+    for (int i = 0; i <= gridCount; ++i) {
+        for (int j = 0; j <= gridCount; ++j) {
+            float x = -size + i * step;
+            float z = -size + j * step;
+            vertices.push_back(x);
+            vertices.push_back(0.0f);
+            vertices.push_back(z);
+            vertices.push_back(0.0f);
+            vertices.push_back(1.0f);
+            vertices.push_back(0.0f);
+            vertices.push_back((float)i / gridCount);
+            vertices.push_back((float)j / gridCount);
         }
-    }*/
-    offsets.push_back(glm::vec3(0.f));
+    }
+
+    for (int i = 0; i < gridCount; ++i) {
+        for (int j = 0; j < gridCount; ++j) {
+            int start = i * (gridCount + 1) + j;
+            indices.push_back(start);
+            indices.push_back(start + 1);
+            indices.push_back(start + gridCount + 1);
+
+            indices.push_back(start + 1);
+            indices.push_back(start + gridCount + 2);
+            indices.push_back(start + gridCount + 1);
+        }
+    }
 }
 
 void Water::setupReflection() {
@@ -97,29 +104,23 @@ void Water::setupReflection() {
 void Water::setupMesh() {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &insVBO);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, insVBO);
-    glBufferData(GL_ARRAY_BUFFER, offsets.size() * sizeof(glm::vec3), &offsets[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-    glVertexAttribDivisor(3, 1);
-    glEnableVertexAttribArray(3);
+    // 設置頂點屬性
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); // pos
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); // normal
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); // texture coord
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
 }
@@ -144,11 +145,14 @@ void Water::init() {
 void Water::update(float dt) {
     this->moveFactor += WAVE_SPEED * dt;
     this->moveFactor = std::fmod(moveFactor, 1.f);
+    this->dt += dt;
 }
 
 void Water::draw(const Shader& shader, GLuint skyboxTexture) {
     shader.setUniform("model", glm::mat4(1.f));
     shader.setUniform("moveFactor", moveFactor);
+    shader.setUniform("time", dt);
+    shader.setUniform("waveHeight", 2.0f);
 
     // skybox texture
     glActiveTexture(GL_TEXTURE3);
@@ -170,8 +174,13 @@ void Water::draw(const Shader& shader, GLuint skyboxTexture) {
     glBindTexture(GL_TEXTURE_2D, reflectionTexture);
     shader.setUniform("reflectionTexture", 14);
 
+    // Water height map
+    glActiveTexture(GL_TEXTURE18);
+    glBindTexture(GL_TEXTURE_2D, textureID[2]);
+    shader.setUniform("heightMap", 18);
+
     glBindVertexArray(VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0, offsets.size());
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 

@@ -5,6 +5,7 @@
 class Water {
 private:
     const float WAVE_SPEED = 0.03;
+    float dt = 0;
     float moveFactor;
 
     int screenWidth, screenHeight;

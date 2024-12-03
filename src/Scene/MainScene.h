@@ -29,7 +29,8 @@ enum RenderParticle {
 
 enum RenderReflection {
 	RENDER_REFLECTION_MIRROR,
-	RENDER_REFLECTION_WATER,
+	RENDER_REFLECTION_WATER_SIN_WAVE,
+	RENDER_REFLECTION_WATER_HEIGHT_MAP,
 	RENDER_REFELCTION_NONE,
 };
 
@@ -68,6 +69,8 @@ private:
 
 	/* Shaders */
 	ShaderManager* shaderManager = ShaderManager::getInstance();
+
+	bool isRenderWater();
 
 public:
 	MainScene();
