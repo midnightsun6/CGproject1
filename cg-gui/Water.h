@@ -11,7 +11,8 @@ private:
     int screenWidth, screenHeight;
 
     GLuint VAO, VBO, insVBO, EBO;
-    GLuint reflectionFBO, reflectionTexture, depthRBO;
+    GLuint reflectionFBO, reflectionTexture, reflectionDepthRBO;
+    GLuint refractionFBO, refractionTexture, refractionDepthRBO;
     std::vector<float> vertices;
     std::vector<uint> indices;
     std::vector <glm::vec3> offsets;
@@ -21,6 +22,7 @@ private:
     void loadTexture();
     void loadVertices();
     void setupReflection();
+    void setupRefraction();
     void setupMesh();
 
 public:
@@ -32,5 +34,6 @@ public:
     void draw(const Shader& shader, GLuint skyboxTexture);
 
     const GLuint& getReflectionFBO();
+    const GLuint& getRefractionFBO();
 };
 

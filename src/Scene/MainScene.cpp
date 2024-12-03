@@ -29,7 +29,6 @@ bool MainScene::initialize() {
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_CLIP_DISTANCE0);
 
     // Init objects.
     grid.init(GL_LINES);
@@ -49,9 +48,9 @@ bool MainScene::initialize() {
     //particle.loadTexuture("kamehameha1.png");
 
     ///* Loading model and animations */
-    //std::cout << "Loading Model: AndroidBot.obj...\n";
-    //this->loadModel("Android Robot/AndroidBot.obj", "Android");
-    //std::cout << "Loading Successfully\n";
+    std::cout << "Loading Model: AndroidBot.obj...\n";
+    this->loadModel("Android Robot/AndroidBot.obj", "Android");
+    std::cout << "Loading Successfully\n";
 
     //std::cout << "Loading Animation: Kamehameha.objani...\n";
     //this->importAnimation("Android", "Kamehameha.objani");
@@ -70,8 +69,8 @@ bool MainScene::initialize() {
     //this->loadModel("floor/Floor.obj", "Floor");
     //std::cout << "Loading Successfully\n";
 
-    /*models["Android"].translate(0.f, 1.f, 0.f);
-    models["Floor"].translate(0.f, 10.f, 0.f);
+    models["Android"].translate(0.f, -10.f, 0.f);
+    /*models["Floor"].translate(0.f, 10.f, 0.f);
     models["Floor"].scale(5.f, 1.f, 5.f);*/
 
     water.setWindowSize(this->screenWidth, this->screenHeight);
@@ -124,6 +123,7 @@ void MainScene::render() {
         case RENDER_REFLECTION_WATER_SIN_WAVE: case RENDER_REFLECTION_WATER_HEIGHT_MAP:
         {
             this->renderWaterReflection();
+            this->renderWaterRefraction();
             break;
         }
         default:
@@ -208,11 +208,12 @@ void MainScene::captureEnvironment() {
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 }
 
-void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight) {
+void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight, const glm::vec4 clipPlane) {
     // Skybox
     shaderManager->useShader(SHADER_CUBEMAP);
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("clipPlane", clipPlane);
     skybox.draw(shaderManager->getCurrShader());
 
     // Terrian
@@ -227,6 +228,7 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     shaderManager->useShader(SHADER_GRASS);
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("clipPlane", clipPlane);
     grass.draw(shaderManager->getCurrShader());
 
     // Model
@@ -238,6 +240,7 @@ void MainScene::renderScene(const glm::mat4& projection, const glm::mat4& view, 
     }
     shaderManager->setCurrUniform("projection", projection);
     shaderManager->setCurrUniform("view", view);
+    shaderManager->setCurrUniform("clipPlane", clipPlane);
 
     shaderManager->setCurrUniform("viewPos", camera.getCameraPos());
     shaderManager->setCurrUniform("lightPos", lightCube.getPosition());
@@ -290,6 +293,21 @@ void MainScene::renderWaterReflection() {
     glm::mat4 reflectView = glm::lookAt(reflectPos, reflectPos + reflectDir, reflectUp);
     this->renderScene(camera.getProjectionMatrix(), reflectView, this->screenWidth, this->screenHeight);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void MainScene::renderWaterRefraction() {
+    glEnable(GL_CLIP_DISTANCE0);
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, water.getRefractionFBO());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    float waterHeight = 0.0f;
+    glm::vec4 clipPlane(0.0f, -1.0f, 0.0f, waterHeight);
+    this->renderScene(camera.getProjectionMatrix(), camera.getViewMatrix(), this->screenWidth, this->screenHeight,clipPlane);
+
+    glDisable(GL_CLIP_DISTANCE0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

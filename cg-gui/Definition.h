@@ -49,6 +49,7 @@ using uint = unsigned int;
     Water reflection: 14
     Grass: 15, 16, 17
     Water HeightMap: 18
+    Water Refraction: 19
 */
 
 

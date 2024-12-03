@@ -89,8 +89,9 @@ public:
 
 	/* Detail Render Functions */
 	void captureEnvironment();
-	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight);
+	void renderScene(const glm::mat4& projection, const glm::mat4& view, const int& screenWidth, const int& screenHeight, const glm::vec4 clipPlane = glm::vec4(0.f));
 	void renderWaterReflection();
+	void renderWaterRefraction();
 	void renderReflectionSphere();
 	void renderWater();
 	void renderVelocity();

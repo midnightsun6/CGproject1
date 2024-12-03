@@ -89,13 +89,37 @@ void Water::setupReflection() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, reflectionTexture, 0);
 
-    glGenRenderbuffers(1, &depthRBO);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthRBO);
+    glGenRenderbuffers(1, &reflectionDepthRBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, reflectionDepthRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthRBO);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, reflectionDepthRBO);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Reflection Framebuffer is not complete!" << std::endl;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Water::setupRefraction() {
+    glGenFramebuffers(1, &refractionFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, refractionFBO);
+    
+    glGenTextures(1, &refractionTexture);
+    glActiveTexture(GL_TEXTURE19);
+    glBindTexture(GL_TEXTURE_2D, refractionTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, refractionTexture, 0);
+
+    glGenRenderbuffers(1, &refractionDepthRBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, refractionDepthRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, refractionDepthRBO);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Refraction Framebuffer is not complete!" << std::endl;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -140,6 +164,7 @@ void Water::init() {
     this->loadVertices();
     this->setupMesh();
     this->setupReflection();
+    this->setupRefraction();
 }
 
 void Water::update(float dt) {
@@ -179,6 +204,11 @@ void Water::draw(const Shader& shader, GLuint skyboxTexture) {
     glBindTexture(GL_TEXTURE_2D, textureID[2]);
     shader.setUniform("heightMap", 18);
 
+    // Water refraction
+    glActiveTexture(GL_TEXTURE19);
+    glBindTexture(GL_TEXTURE_2D, refractionTexture);
+    shader.setUniform("refractionTexture", 19);
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -186,4 +216,8 @@ void Water::draw(const Shader& shader, GLuint skyboxTexture) {
 
 const GLuint& Water::getReflectionFBO() {
     return this->reflectionFBO;
+}
+
+const GLuint &Water::getRefractionFBO() {
+    return this->refractionFBO;
 }

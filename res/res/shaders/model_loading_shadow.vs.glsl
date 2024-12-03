@@ -13,6 +13,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 lightSpace;
+uniform vec4 clipPlane;
 
 void main() {
     vec4 worldPos = model * vec4(aPos + aOffset, 1.0);
@@ -22,4 +23,6 @@ void main() {
     
     TexCoords = aTexCoords;    
     gl_Position = projection * view * worldPos;
+
+    gl_ClipDistance[0] = dot(worldPos, clipPlane);
 }
